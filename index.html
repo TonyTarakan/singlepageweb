@@ -161,6 +161,13 @@
 	}
 	@media only screen and (max-width: 568px)
 	{
+		.content-body
+		{
+			width:95%;
+			height:100%;
+			margin:0 auto;
+			text-align:center
+		}
 		.section-row
 		{
 			flex-direction:column;
@@ -645,10 +652,17 @@
 		},
 	    dragSvg : function(event){
 			if(this.props.down == true){
-				var presentPos = event.screenX;
+				var presentPos;
+				try{  
+					document.createEvent("TouchEvent");  
+					presentPos = event.touches[0].clientX; 
+				} catch (e) {  
+					presentPos = event.screenX;
+				}
 				if(this.props.prevPos!=0){
+
 					var diff = (presentPos-this.props.prevPos);
-					
+					//console.log(diff);
 					if(diff<-2&&this.props.end<this.props.length){
 						this.props.start= this.props.start+1;
 						this.props.end = this.props.end+1;
@@ -666,7 +680,6 @@
 			}
 	    },
 		mousedown : function(event){
-			
 			this.props.down=true;
 		},
 		mouseup : function(event){
@@ -725,11 +738,13 @@
 	        this.generateBars(1,this.props.datumsPerScreen);
 			this.props.start=1;
 			this.props.end=this.props.datumsPerScreen;
-			  //this.props.svgObj.addEventListener('drag',this.test.bind(this));
 	        this.props.svgObj.addEventListener('mousemove',this.dragSvg.bind(this));
-	        this.props.svgObj.addEventListener('touchmove',this.dragSvg.bind(this));
 			this.props.svgObj.addEventListener('mousedown',this.mousedown.bind(this));
 	        this.props.svgObj.addEventListener('mouseup',this.mouseup.bind(this));
+
+	        this.props.svgObj.addEventListener('touchmove',this.dragSvg.bind(this));
+	        this.props.svgObj.addEventListener('touchstart',this.mousedown.bind(this));
+	        this.props.svgObj.addEventListener('touchend',this.mouseup.bind(this));
 	    }
 	}; 
 
@@ -865,7 +880,7 @@
 		<div class="content-body">
 			<div class="section-row">
 				<div class="section">
-					<h2>Суммарное потребление</h2>
+					<h2>Суммарное потребление (кВт*ч)</h2>
 					<div class="section-body">
 
 						<div class="subsection">
@@ -873,7 +888,6 @@
 						</div>
 
 						<div class="subsection">
-							<h4>Потребление (кВт*ч)</h2>
 							<strong id="energy1"><pre>Тариф 1		55</pre></strong>
 							<strong id="energy2"><pre>Тариф 2		10</pre></strong>
 							<strong id="energy3"><pre>Тариф 3		10</pre></strong>
@@ -934,8 +948,8 @@
 
 					properties = {}
 
-					properties['width'] = 300;
-					properties['height'] = 300;
+					properties['width'] = 260;
+					properties['height'] = 260;
 					properties['data']= [10,30,60]
 					properties['dataname']= ["T1","T2","T3"]
 					properties['colours']= ['#38D3EE', '#C9D2D4', '#FF5A82'];
