@@ -126,6 +126,7 @@
 		justify-content:center;
 		margin-left:1rem;
 		margin-right:1rem;
+		text-align:center
 	}
 	.section h2
 	{
@@ -135,18 +136,18 @@
 		font-weight:400;
 		border-bottom:1px solid #f5f5f5
 	}
-
-	.conic:hover{
+	.conic:hover
+	{
 	    opacity: 0.3;
 	}
-
-	.ylabel{
+	.ylabel
+	{
 	    -moz-user-select: none;
 		-khtml-user-select: none;
 		user-select: none
 	}
-
-	.chartBar{
+	.chartBar
+	{
 	    fill:steelblue;
 	    stroke:black;
 	    stroke-width:0.1;
@@ -155,7 +156,8 @@
 		flex-direction:row;
 		flex-wrap:nowrap
 	}
-	.chartBar:hover{
+	.chartBar:hover
+	{
 	    fill:#F2635F;
 	    opacity:0.7
 	}
@@ -334,7 +336,7 @@
 	                .addAttribute('height', barHeight)
 	                .addAttribute('class', barClass)
 	                .toDomString();
-	            return bar;
+	        return bar;
 	    }
 	    
 	};
@@ -360,7 +362,12 @@
 	            .addAttribute('data-name', 'test')
 	            .addAttribute('fill', colour)
 	            .toDomString();
-	    svg.appendChild(pathNode);
+// optimize !!!
+	    var title = fnSvgElement.createNewElement('title').toDomString();
+		title.textContent = datum + '%';
+ 		pathNode.appendChild(title);
+
+ 		svg.appendChild(pathNode);
 	}
 	var sketch = {
 	};
@@ -709,8 +716,13 @@
 	            barPosition = oY-barHeight;
 	            var bar = set.bar(x,barPosition,barWidth,barHeight,'chartBar');
 	                x=x+barWidth+distBtwBar;
-	            group.appendChild(bar);
-	        }
+//optimise!!!
+	            var title = fnSvgElement.createNewElement('title').toDomString();
+				title.textContent = this.props.xCords[i-1] + ': ' + this.props.yCords[i-1] + ' кВт•ч';
+	     		bar.appendChild(title);
+
+	     		group.appendChild(bar);
+		    }
 			this.props.groupBar = group;
 			svg.appendChild(group);
 	    },
@@ -880,7 +892,7 @@
 		<div class="content-body">
 			<div class="section-row">
 				<div class="section">
-					<h2>Суммарное потребление (кВт*ч)</h2>
+					<h2>Суммарное потребление (кВт•ч)</h2>
 					<div class="section-body">
 
 						<div class="subsection">
@@ -888,10 +900,11 @@
 						</div>
 
 						<div class="subsection">
-							<strong id="energy1"><pre>Тариф 1		55</pre></strong>
+
+							<strong id="energy1"><pre>Тариф 1		452452</pre></strong>
 							<strong id="energy2"><pre>Тариф 2		10</pre></strong>
 							<strong id="energy3"><pre>Тариф 3		10</pre></strong>
-							<strong id="energy_total"><pre>Сумма		75</pre></strong>
+							<strong id="energy_total"><pre>Сумма		452472</pre></strong>
 						</div>
 
 					</div>
@@ -930,7 +943,7 @@
 
 					var  props = {
 						
-						'data': {'apple':12,'oracle':2,'google':3,'tesla':4,'A':3,'B':4,'g':5,'d':6,'sd':2,'sgfsdfg':3,'asrt':5,'ytryg':6,'dfa':2,'adfadfh':5,'cvn':6,'vnmghj':9,'gfggdt':9,'zxcv':5,'zfgsdf':1 ,'gfggdgt':6,'zxcgv':2,'zfgsgdf':1 ,'tegdfsla':4},
+						'data': {'00:30':12,'01:00':2,'01:30':3,'02:00':4,'02:30':3,'03:00':4,'03:30':5,'04:00':6,'04:30':2,'05:00':3,'05:30':5,'06:00':6,'06:30':2,'07:00':5,'07:30':6,'08:00':9,'08:30':9,'09:00':5,'09:30':1 ,'10:00':6,'10:30':2,'11:00':1 ,'11:30':4},
 						'xCords': [],
 						'yCords': [],
 						'yCordsSorted': [],
