@@ -23,6 +23,9 @@
 	}
 	.content
 	{
+		-moz-user-select: none;
+		-khtml-user-select: none;
+		user-select: none;
 		display:block;
 		height:100%
 	}
@@ -142,12 +145,6 @@
 	.conic:hover
 	{
 	    opacity: 0.3;
-	}
-	.ylabel
-	{
-	    -moz-user-select: none;
-		-khtml-user-select: none;
-		user-select: none
 	}
 	.chartBar
 	{
@@ -596,6 +593,21 @@
 		    }
 		};
 
+		var barprops = {			
+			'data': {},
+			'xCords': [],
+			'yCords': [],
+			'yCordsSorted': [],
+			'divId': 'undefined',
+			'datumsPerScreen': 12,
+			'colours': {},
+			'barColours': '',
+			'yTickLabels': {},
+			'start': 0,
+			'svgObj': 'undefined',
+			'axisType': 'generateSimpleAxis'
+		};
+
 		krapBar = {
 		    props: {
 		        'width': "100%",
@@ -612,7 +624,7 @@
 		        'svgObj': 'undefined',
 		        'axisType': 'generateSimpleAxis',
 		        'aProps': {},
-				'down' : false,
+				//'down' : false,
 				'prevPos': 0,
 				'start':0,
 				'end':0,
@@ -623,39 +635,51 @@
 				var group = document.getElementsByClassName('bargroup')[0];
 			},
 		    dragSvg : function(event) {
-				if(this.props.down == true) {
+				if(event.buttons!=0) {
 					var presentPos;
-					try{  
-						document.createEvent("TouchEvent");  
+					if ('ontouchstart' in window)
 						presentPos = event.touches[0].clientX; 
-					} catch (e) {  
+					else
 						presentPos = event.screenX;
-					}
-					if(this.props.prevPos!=0){
+
+					console.log("PrevPos", this.props.prevPos, "presentPos", presentPos);
+					if(this.props.prevPos!=0) {
 
 						var diff = (presentPos-this.props.prevPos);
-						//console.log(diff);
-						if(diff<-2&&this.props.end<this.props.length){
+						console.log(diff);
+						if(diff<-6&&this.props.start+this.props.datumsPerScreen<this.props.length) {
 							this.props.start = this.props.start+1;
 							this.props.end = this.props.end+1;
 							this.props.svgObj.removeChild(this.props.groupBar);
-							this.generateBars(this.props.start,this.props.end);
+							this.generateBars(this.props.start+1,this.props.start+this.props.datumsPerScreen);
+							console.log("GenBars(<-):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
+							this.props.prevPos = presentPos;
 						}
-						if(diff>2&&this.props.start>=0){
+						if(diff>6&&this.props.start>0) {
 							this.props.start= this.props.start-1;
 							this.props.end = this.props.end-1;
 							this.props.svgObj.removeChild(this.props.groupBar);
-							this.generateBars(this.props.start,this.props.end);
+							this.generateBars(this.props.start+1,this.props.start+this.props.datumsPerScreen);
+							console.log("GenBars(->):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
+							this.props.prevPos = presentPos;
 						}
 					}
-					this.props.prevPos = presentPos;
+					else
+						this.props.prevPos = presentPos;
+					barprops.start = this.props.start;
+					barprops.end = this.props.end;
 				}
 		    },
 			mousedown : function(event) {
-				this.props.down=true;
+				//this.props.down=true;
+				if ('ontouchstart' in window)
+					this.props.prevPos = event.touches[0].clientX;
+				else
+					this.props.prevPos = event.screenX;
+				return false;
 			},
 			mouseup : function(event) {
-				this.props.down=false;
+				//this.props.down=false;
 			},
 		    generateBars : function(start,end) {
 		        var L = this.props.aProps.yTickLabels.length;
@@ -672,6 +696,9 @@
 		        var y = oY;
 				var group = fnSvgElement.createNewElement('g')
 							.addAttribute('class','bargroup')
+							.addAttribute('onmousedown','return false;')
+							.addAttribute('ondragstart','return false;')
+							.addAttribute('ondrop','return false;')
 							.toDomString();
 							
 		        for(var i=start;i<=end;i++) {
@@ -710,16 +737,17 @@
 		        window['axis'][this.props.axisType](this.props.svgObj, xCords, this.props.yCordsSorted,[],0, this.props.height, this.props.width); 
 		        document.getElementById(id).appendChild(this.props.svgObj);
 		        this.props.aProps = axis.props;
-		        this.generateBars(1,this.props.datumsPerScreen);
-				this.props.start=1;
+		        this.generateBars(barprops.start+1, barprops.start+this.props.datumsPerScreen);
+				//this.props.start=barprops.start+1;
+				//console.log(barprops.start, "to", barprops.start+this.props.datumsPerScreen);
 				this.props.end=this.props.datumsPerScreen;
 		        this.props.svgObj.addEventListener('mousemove',this.dragSvg.bind(this));
 				this.props.svgObj.addEventListener('mousedown',this.mousedown.bind(this));
-		        this.props.svgObj.addEventListener('mouseup',this.mouseup.bind(this));
+		        //this.props.svgObj.addEventListener('mouseup',this.mouseup.bind(this));
 
 		        this.props.svgObj.addEventListener('touchmove',this.dragSvg.bind(this));
 		        this.props.svgObj.addEventListener('touchstart',this.mousedown.bind(this));
-		        this.props.svgObj.addEventListener('touchend',this.mouseup.bind(this));
+		        //this.props.svgObj.addEventListener('touchend',this.mouseup.bind(this));
 		    }
 		}; 
 
@@ -739,11 +767,16 @@
 			return new XMLHttpRequest();
 		}
 
-		function get_data(success, error, timeout) {
+		function get_data(success, error, timeout, now_data) {
 
 			/*var xmlhttp = getXmlHttp();
 
 			xmlhttp.open('GET', '/api/v1/get', true);
+			for() {
+				xmlhttp1.open('GET', '/api/v1/get1?' + now_date_rnd , true);
+			}
+
+
 
 			xmlhttp.timeout = timeout || 2000;
 
@@ -751,7 +784,7 @@
 				if (xmlhttp.readyState == XMLHttpRequest.DONE) {
 					if(xmlhttp.status == 200) {*/
 						try {
-							success( JSON.parse( "{\"SN\":\"TEST0000\", \"A1\":10.000, \"A2\":20.000, \"A3\":22.500, \"P\":123.65, \"U\":220.14 }" ) );
+							success( JSON.parse( "{\"SN\":\"TEST0000\", \"A1\":80.000, \"A2\":20.000, \"A3\":122.500, \"P\":123.65, \"U\":220.14 }" ) );
 						}
 						catch (E) {
 							error("Fail to parse json");
@@ -793,32 +826,20 @@
 						'data': [T1, T2, T3],
 						'colours': ['#ff8678', '#ffbf00', '#4ec7ff']
 					}
-					console.log(T1, T2, T3);
-					var barprops = {
-						
-						'data': {	1:15, 2:2, 3:3, 4:4, 5:3, 6:11, 7:5, 8:6, 
-									9:2, 10:3, 11:5, 12:6, 13:2, 14:5, 15:6, 16:9, 
-									17:9, 18:5, 19:1, 20:9, 21:10, 22:1, 23:1, 24:5, 
-									25:1, 26:4, 27:5, 28:6, 29:2, 30:3, 31:5, 32:6, 
-									33:2, 34:5, 35:6, 36:9, 37:9, 38:5,  39:1, 40:5, 
-									41:15, 42:2, 43:3, 44:4, 45:3, 46:4, 47:5, 48:12},
-						//'data': {},
-						'xCords': [],
-						'yCords': [],
-						'yCordsSorted': [],
-						'divId': 'undefined',
-						'datumsPerScreen': 12,
-						'colours': {},
-						'barColours': '',
-						'yTickLabels': {},
-						'svgObj': 'undefined',
-						'axisType': 'generateSimpleAxis'
-					};
+					//console.log(T1, T2, T3);
+
+					barprops.data = {	1:15, 2:2, 3:3, 4:4, 5:3, 6:11, 7:5, 8:6, 
+										9:2, 10:3, 11:5, 12:6, 13:2, 14:5, 15:6, 16:9, 
+										17:9, 18:5, 19:1, 20:9, 21:10, 22:1, 23:1, 24:5, 
+										25:1, 26:4, 27:5, 28:6, 29:2, 30:3, 31:5, 32:6, 
+										33:2, 34:5, 35:6, 36:9, 37:9, 38:5,  39:1, 40:5, 
+										41:15, 42:2, 43:3, 44:4, 45:3, 46:4, 47:5, 48:12};
+
 
 					document.getElementById("pie").innerHTML = "";
 					chart.pie('pie',pieprops);
 					document.getElementById("bar").innerHTML = "";
-					chart.bar('bar',barprops);
+					chart.bar('bar', barprops);
 
 					setTimeout(refreshData, 1000);
 				},
@@ -844,6 +865,7 @@
 				},
 				1000
 			);
+			//krapBar.mouseup();
 		}
 
 		
