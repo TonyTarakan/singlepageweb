@@ -208,7 +208,7 @@
 	<script type="text/javascript">
 
 
-		krapAttr = {
+		elAttr = {
 		    width: 'width',
 		    height: 'height',
 		    id: 'id',
@@ -245,12 +245,12 @@
 
 		newObj = {
 			bar:function(){
-				var b = Object.assign({},krapBar);
+				var b = Object.assign({},elBar);
 				return b;
 			}
 		}
 
-		krapUtil = {
+		elUtil = {
 		    calcTot: function (data) {
 		        var tot = data.reduce(function (previousValue, currentValue) {
 		            return previousValue + currentValue;
@@ -268,7 +268,7 @@
 			}
 		};
 
-		krapStats = {
+		elStats = {
 		    calcRangeOnSorted: function (arr) {
 		        var len = arr.length;
 		        var range = (arr[len-1] - arr[0]) / (len-1);
@@ -347,7 +347,7 @@
 	 		svg.appendChild(pathNode);
 		}
 
-		krapException = {
+		elException = {
 		    generalCheck: function (actual, expected) {
 		        if (actual === expected) {
 		            return !0;
@@ -363,7 +363,7 @@
 		        }
 		    },
 		    checkObject: function (obj) {
-		        if (this.generalCheck(obj, krapAttr.undefined)) {
+		        if (this.generalCheck(obj, elAttr.undefined)) {
 		            throw Error();
 		        } else {
 		            return !0;
@@ -371,7 +371,7 @@
 		    }
 		};
 
-		krapPie = {
+		elPie = {
 		    svgObject: 'undefined',
 		    properties: {
 		        width: '',
@@ -381,7 +381,7 @@
 		    },
 		    create: function (eleId) {
 		        var div = document.getElementById(eleId);
-		        if (krapException.checkId(div)) {
+		        if (elException.checkId(div)) {
 		            this.svgObject = fnSvgElement.createNewElement('svg')
 		           			.addAttribute('width', this.properties.width)
 		                    .addAttribute('height', this.properties.height)
@@ -395,7 +395,7 @@
 		    generate: function () {
 		        var ht = parseInt(this.properties.height);
 		        var wt = parseInt(this.properties.width);
-		        var tot = krapUtil.calcTot(this.properties.data);
+		        var tot = elUtil.calcTot(this.properties.data);
 		        var radius = 0.9* (2*ht) / 4;
 		        var len = this.properties.data.length;
 		        var cl = this.properties.colours.length;
@@ -420,13 +420,13 @@
 		        this.svgObject.appendChild(gobj);
 		    },
 		    attribute: function (attr, value) {
-		        krapException.checkObject(this.svgObject);
+		        elException.checkObject(this.svgObject);
 		        this.properties[attr] = value;
 		        this.svgObject.setAttribute(attr, value);
 		        return this;
 		    },
 		    data: function (dt) {
-		        krapException.checkObject(this.svgObject);
+		        elException.checkObject(this.svgObject);
 		        this.properties.data = dt;
 		        this.generate();
 		        return this;
@@ -506,7 +506,7 @@
 		        {
 		            var ycords = this.props.yCords;
 		            var length = ycords.length;
-		            var range = krapStats.calcRangeOnNonSortedData(ycords);
+		            var range = elStats.calcRangeOnNonSortedData(ycords);
 		            var i = 0;
 		            var max = ycords[length - 1];
 		            var iniT = ycords[0];
@@ -577,11 +577,11 @@
 		chart = {
 		    pie: function (id, props) {
 		        for (var i in props) {
-		            krapPie.properties[i] = props[i];
+		            elPie.properties[i] = props[i];
 
 		        }
-		        krapPie.create(id);
-		        krapPie.generate();
+		        elPie.create(id);
+		        elPie.generate();
 		    },
 		    bar: function (id, props) {
 		        var bar = newObj.bar();
@@ -603,12 +603,12 @@
 			'colours': {},
 			'barColours': '',
 			'yTickLabels': {},
-			'start': 0,
+			'start': 36, // hardcoded draw area (48-datumsPerScreen)
 			'svgObj': 'undefined',
 			'axisType': 'generateSimpleAxis'
 		};
 
-		krapBar = {
+		elBar = {
 		    props: {
 		        'width': "100%",
 		        'height': 400,
@@ -776,7 +776,7 @@
 				xmlhttp1.open('GET', '/api/v1/get1?' + now_date_rnd , true);
 			}
 
-
+// success( JSON.parse( "{\"3546546444648\":\"3212.231\" }" ) );
 
 			xmlhttp.timeout = timeout || 2000;
 
@@ -784,7 +784,7 @@
 				if (xmlhttp.readyState == XMLHttpRequest.DONE) {
 					if(xmlhttp.status == 200) {*/
 						try {
-							success( JSON.parse( "{\"SN\":\"TEST0000\", \"A1\":80.000, \"A2\":20.000, \"A3\":122.500, \"P\":123.65, \"U\":220.14 }" ) );
+							success( JSON.parse( "{\"SN\":\"TEST0000\", \"T\":80.000, \"A1\":80.000, \"A2\":20.000, \"A3\":122.500, \"P\":123.65, \"U\":220.14 , \"TD\": { \"1\":10, \"2\":2, \"3\":3, \"4\":4, \"5\":3, \"6\":11, \"7\":5, \"8\":6, \"9\":2, \"10\":3, \"11\":5, \"12\":6, \"13\":2, \"14\":5, \"15\":6, \"16\":9, \"17\":9, \"18\":5, \"19\":1, \"20\":9, \"21\":10, \"22\":1, \"23\":1, \"24\":5, \"25\":1, \"26\":4, \"27\":5, \"28\":6, \"29\":2, \"30\":3, \"31\":5, \"32\":6, \"33\":2, \"34\":5, \"35\":6, \"36\":9, \"37\":9, \"38\":5, \"39\":1, \"40\":5, \"41\":15, \"42\":2, \"43\":3, \"44\":4, \"45\":3, \"46\":4, \"47\":5, \"48\":12}}" ) );
 						}
 						catch (E) {
 							error("Fail to parse json");
@@ -826,15 +826,8 @@
 						'data': [T1, T2, T3],
 						'colours': ['#ff8678', '#ffbf00', '#4ec7ff']
 					}
-					//console.log(T1, T2, T3);
-
-					barprops.data = {	1:15, 2:2, 3:3, 4:4, 5:3, 6:11, 7:5, 8:6, 
-										9:2, 10:3, 11:5, 12:6, 13:2, 14:5, 15:6, 16:9, 
-										17:9, 18:5, 19:1, 20:9, 21:10, 22:1, 23:1, 24:5, 
-										25:1, 26:4, 27:5, 28:6, 29:2, 30:3, 31:5, 32:6, 
-										33:2, 34:5, 35:6, 36:9, 37:9, 38:5,  39:1, 40:5, 
-										41:15, 42:2, 43:3, 44:4, 45:3, 46:4, 47:5, 48:12};
-
+					
+					barprops.data = data.TD;
 
 					document.getElementById("pie").innerHTML = "";
 					chart.pie('pie',pieprops);
@@ -865,7 +858,7 @@
 				},
 				1000
 			);
-			//krapBar.mouseup();
+			//elBar.mouseup();
 		}
 
 		
