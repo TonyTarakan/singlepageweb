@@ -789,41 +789,47 @@
 		}
 
 		function get_data(success, success1, error, timeout) {
-			
-			/*var xmlhttp = getXmlHttp();
+			var barreq = false;
 
-			xmlhttp.open('GET', '/api/v1/get', true);
-			for() {
-				xmlhttp1.open('GET', '/api/v1/get1', true);
-			}
+			var xmlhttp = getXmlHttp();
 
-// success( JSON.parse( "{\"3546546444648\":\"3212.231\" }" ) );
+			while() {
+				xmlhttp.open('GET', ('/api/v1/get' + (barreq ? "1" : "")), true);
 
-			xmlhttp.timeout = timeout || 2000;
+				xmlhttp.timeout = timeout || 2000;
 
-			xmlhttp.onreadystatechange = function() {
-				if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-					if(xmlhttp.status == 200) {*/
-						try {
-							success( JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":80.000, \"A2\":20.000, \"A3\":122.500, \"P\":123.65, \"U\":220.14 }" ) );
-							if(needBar) {
-								success1( JSON.parse( "{\"TD\":[10, 2, 3, 4, 3, 11, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 15, 2, 3, 4, 3, 4, 5, 12]}" ) );
-								needBar = false;
+				xmlhttp.onreadystatechange = function() {
+					if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+						if(xmlhttp.status == 200) {
+							try {
+								barreq ? success1(JSON.parse(xmlhttp.responseText)) : success(JSON.parse(xmlhttp.responseText)); 
+							}
+							catch (E) {
+								error("Fail to parse json");
 							}
 						}
-						catch (E) {
-							error("Fail to parse json");
+						else {
+							error(xmlhttp.responseText);
 						}
-				/*	}
-					else {
-						error(xmlhttp.responseText);
-					}
 
-				}
-			};
-			
-			xmlhttp.send(null);*/
+					}
+				};
+				
+				xmlhttp.send(null);
+
+				if(needBar)
+					
+					if(barreq) {
+						needBar = false;
+						break;
+					}
+					else
+						barreq = true;
+
+				else break;
+			}
 		}
+
 
 		function refreshData()
 		{
