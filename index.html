@@ -789,12 +789,36 @@
 		}
 
 		function get_data(success, success1, error, timeout) {
-			var barreq = false;
-
+			
 			var xmlhttp = getXmlHttp();
+			var rs = '/api/v1/get';
 
-			while() {
-				xmlhttp.open('GET', ('/api/v1/get' + (barreq ? "1" : "")), true);
+			xmlhttp.open('GET', rs, true);
+
+			xmlhttp.timeout = timeout || 2000;
+
+			xmlhttp.onreadystatechange = function() {
+				if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+					if(xmlhttp.status == 200) {
+						try {
+							success(JSON.parse(xmlhttp.responseText));
+						}
+						catch (E) {
+							error("Fail to parse json");
+						}
+					}
+					else {
+						error(xmlhttp.responseText);
+					}
+
+				}
+			};
+			
+			xmlhttp.send(null);
+
+			if(needBar) {
+
+				xmlhttp.open('GET', rs+"1", true);
 
 				xmlhttp.timeout = timeout || 2000;
 
@@ -802,7 +826,8 @@
 					if (xmlhttp.readyState == XMLHttpRequest.DONE) {
 						if(xmlhttp.status == 200) {
 							try {
-								barreq ? success1(JSON.parse(xmlhttp.responseText)) : success(JSON.parse(xmlhttp.responseText)); 
+								success1(JSON.parse(xmlhttp.responseText));
+								needBar = false;
 							}
 							catch (E) {
 								error("Fail to parse json");
@@ -814,22 +839,10 @@
 
 					}
 				};
-				
-				xmlhttp.send(null);
 
-				if(needBar)
-					
-					if(barreq) {
-						needBar = false;
-						break;
-					}
-					else
-						barreq = true;
-
-				else break;
+				xmlhttp.send(null);			
 			}
 		}
-
 
 		function refreshData()
 		{
