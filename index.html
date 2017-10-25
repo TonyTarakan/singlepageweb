@@ -782,7 +782,7 @@
 
 		function get_data(success, success1, error, timeout) {
 			
-			/*var xmlhttp = new XMLHttpRequest();
+			var xmlhttp = new XMLHttpRequest();
 			var rs = '/api/v1/';
 
 			xmlhttp.open('GET', rs+"get", true);
@@ -792,10 +792,9 @@
 			xmlhttp.onreadystatechange = function() {
 				if (xmlhttp.readyState == XMLHttpRequest.DONE) {
 					if(xmlhttp.status == 200) {
-						try {*/
-							success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
-							success1(JSON.parse( "{\"lp\":[10, 2, 3, 4, 3, 11, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 15.451, 2, 3, 4, 3, 4, 5, 12]}" ));
-			/*			}
+						try {
+							success(JSON.parse(xmlhttp.responseText));
+						}
 						catch (E) {
 							error("Fail to parse json");
 						}
@@ -836,7 +835,7 @@
 				};
 
 				xmlhttp1.send(null);		
-			}*/
+			}
 		}
 
 		function refreshData()
