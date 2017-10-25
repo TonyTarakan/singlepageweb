@@ -775,35 +775,41 @@
 
 		function get_data(success, success1, error, timeout) {
 			
-			var xmlhttp = new XMLHttpRequest();
 			var rs = '/api/v1/';
 
-			xmlhttp.open('GET', rs+"get", true);
+			if(!needBar) {
+				var xmlhttp = new XMLHttpRequest();
 
-			xmlhttp.timeout = timeout || 2000;
+				xmlhttp.open('GET', rs+"get", true);
 
-			xmlhttp.onreadystatechange = function() {
-				if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-					if(xmlhttp.status == 200) {
-						try {
-							success(JSON.parse(xmlhttp.responseText));
+				xmlhttp.timeout = timeout || 2000;
+
+				xmlhttp.onreadystatechange = function() {
+					if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+						if(xmlhttp.status == 200) {
+							try {
+								success(JSON.parse(xmlhttp.responseText));
+							}
+							catch (E) {
+								error("Fail to parse json get");
+								console.log("Fail to parse json get");
+							}
 						}
-						catch (E) {
-							error("Fail to parse json");
+						else {
+							error(xmlhttp.responseText);
+							console.log("xmlhttp", xmlhttp.responseText);
 						}
-					}
-					else {
-						error(xmlhttp.responseText);
-					}
 
-				}
-			};
+					}
+				};
 			
-			xmlhttp.send(null);
+				xmlhttp.send(null);
+			}
 
-			var xmlhttp1 = new XMLHttpRequest();
+			
+			else {
 
-			if(needBar) {
+				var xmlhttp1 = new XMLHttpRequest();
 
 				xmlhttp1.open('GET', rs+"lp", true);
 
@@ -817,11 +823,13 @@
 								needBar = false;
 							}
 							catch (E) {
-								error("Fail to parse json");
+								error("Fail to parse json lp");
+								console.log("Fail to parse json lp");
 							}
 						}
 						else {
 							error(xmlhttp1.responseText);
+							console.log("xmlhttp1", xmlhttp1.responseText);
 						}
 
 					}
@@ -899,6 +907,8 @@
 					barprops.data = data.lp;
 					document.getElementById("bar").innerHTML = "";
 					chart.bar('bar', barprops);
+
+					setTimeout(refreshData, 1000);
 				},
 				function(error) {
 					if (error_counter > 3)
