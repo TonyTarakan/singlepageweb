@@ -135,7 +135,7 @@
 		justify-content:center;
 		flex-direction:column;
 		text-align:left;
-		line-height: 0; 
+		line-height: 0;
 	}
 	.section h2
 	{
@@ -163,12 +163,20 @@
 	}
 	.chartBar:hover
 	{
-		opacity:0.7
+		opacity:0.7;
+		box-shadow:0 2px 20px 0 rgba(0,0,0,0.3),0 1px 5px 0 rgba(0,0,0,0.3),0 3px 1px -2px rgba(0,0,0,0.3)
 	}
 	.barch
 	{
 		width:100%;
-		height:400px
+		height:400px;
+		font-size:1.4rem;
+		fill:#00a5cd
+	}
+	.barcht
+	{
+		margin-top: 0.4rem;
+		font-size:1.4rem
 	}
 	@media only screen and (max-width: 600px)
 	{
@@ -202,7 +210,12 @@
 		}
 		.barch
 		{
-			height:200px
+			height:200px;
+			font-size:0.8rem
+		}
+		.barcht
+		{
+			font-size:1.1rem;
 		}
 	}
 	@media only screen and (min-width: 600px) and (max-width: 768px)
@@ -210,6 +223,11 @@
 		.section h2
 		{
 			font-size:1.2rem
+		}
+		.barch
+		{
+			height:300px;
+			font-size:1rem
 		}
 	}
 	</style>
@@ -447,22 +465,31 @@
 				'xdataRotation': 90,
 				'xCords': [],
 				'yCords': [],
-				'yTickLabels': [],
+				'yAxPos': [],
 				'baseUnit' : 0
 			},
-			generateAxis: function () {
-				var yPath = pathG.move(this.props.OX, this.props.OY) + ' ' + pathG.lineTo(this.props.EX, this.props.EY);
+			generateAxis: function (level, color, text) {
+				var yPath = pathG.move(this.props.OX, this.props.OY-level) + ' ' + pathG.lineTo(this.props.EX, this.props.EY-level);
 				pathObj = fnSvgElement.createNewElement('path')
 						.addAttribute('d', yPath)
 						.addAttribute('stroke-width', '1')
-						.addAttribute('class', 'yAxis')
-						.addAttribute('stroke', 'black')
-						.addAttribute('fill', 'none')
+						.addAttribute('stroke', color)
+						//.addAttribute('fill', 'none')
+						//.addAttribute('filter', 'url(#shadowfilter)')
 						.toDomString();
 				this.props.svg.appendChild(pathObj);
+				if(text) {
+					var titlet = fnSvgElement.createNewElement('text')
+												.addAttribute('x', this.props.OX)
+												.addAttribute('y', this.props.OY-level-5)
+												.addAttribute('class', 'barch')
+												.toDomString();
+												titlet.textContent = this.props.yAxPos + ' кВт•ч';
+					this.props.svg.appendChild(titlet);
+				}
 			},
 			calculateAxis: function (width, height) {
-				console.log(width);
+				
 				var startX = this.props.SX = 0.05*width;
 				var startY = this.props.SY = 0;
 				this.props.OX = startX;
@@ -475,6 +502,8 @@
 				var length = ycords.length;
 				var range = elStats.calcRangeOnNonSortedData(ycords);
 				var max = ycords[length - 1];
+				this.props.yAxPos = Math.ceil(max);
+				//console.log(max, range);
 				var scaleF = 0;
 				if (max % range === 0)
 					scaleF = (max / range);
@@ -483,6 +512,7 @@
 				var a_diff = (oY - startY) / (scaleF+1);
 
 				this.props.aDiff = a_diff/range;
+				//console.log("adif",this.props.aDiff);
 			},
 			generateSimpleAxis: function (svgObj, xcords, ycords, yticks, xdataR, height, width) {
 				width = document.getElementById("bar").clientWidth;
@@ -490,10 +520,12 @@
 				this.props.svg = svgObj;
 				this.props.xCords = xcords;
 				this.props.yCords = ycords;
-				this.props.yTickLabels = yticks;
 				this.props.xdataRotation = xdataR;
 				this.calculateAxis(width, height);
-				this.generateAxis();
+				this.generateAxis(0, 'black');
+				for (var i = 4; i > 0; i--) {
+					this.generateAxis(this.props.yAxPos*i*this.props.aDiff/4, '#00a5cd', !(i%4))
+				}
 			}
 		};
 
@@ -533,7 +565,6 @@
 			'xCords': [],
 			'yCords': [],
 			'yCordsSorted': [],
-			'divId': 'undefined',
 			'datumsPerScreen': 12,
 			'colours': {},
 			'barColours': '',
@@ -552,7 +583,6 @@
 				'xCords': [],
 				'yCords': [],
 				'yCordsSorted': [],
-				'divId': 'undefined',
 				'datumsPerScreen': 4,
 				'colours': {},
 				'barColours': 'blue',
@@ -627,8 +657,6 @@
 				this.props.prevBar = t;
 			},
 			generateBars : function(start,end) {
-				var L = this.props.aProps.yTickLabels.length;
-				var max = this.props.aProps.yTickLabels[L-1];
 				var LOX = this.props.aProps.LOX;
 				var oX =  this.props.aProps.OX;
 				var oY =  this.props.aProps.OY;
@@ -644,11 +672,15 @@
 							.addAttribute('ondragstart','return false;')
 							.addAttribute('ondrop','return false;')
 							.toDomString();
-							
+
 				for(var i=start;i<=end;i++) {
 					var barHeight = ((parseInt(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
 					barPosition = oY-barHeight;
 					var bar = set.bar(x,barPosition,'b'+i,barWidth,barHeight,'chartBar');
+
+					if(bar.id == this.props.prevBar.id) {
+						bar.style.fill = '#F2635F';
+					}
 				
 
 					/*var titlet = fnSvgElement.createNewElement('text')
@@ -670,8 +702,7 @@
 
 			 		//group.appendChild(titlet);
 
-			 		bar.setAttribute('ontouchstart','console.log("sedfsd");');
-					bar.addEventListener('mousedown', this.ttShow.bind(this) );
+					bar.addEventListener('mousedown', this.ttShow.bind(this));
 					//"var tt = document.getElementById(\"tt"+i+"\"); tt.style.x = event.screenX; tt.style.y = event.screenY;tt.style.visibility='visible';"); // this.firstChild.style.visibility='visible'
 
 
@@ -679,12 +710,14 @@
 
 			 		x=x+barWidth+distBtwBar;
 				}
+
+				
+
 				this.props.groupBar = group;
 				svg.appendChild(group);
 			},
 			generate: function (id, properties) {
 				delete document.getElementById(id);
-				this.props.divId = id;
 				for (var i in properties) {
 					this.props[i] = properties[i];
 				}
@@ -750,9 +783,9 @@
 		function get_data(success, success1, error, timeout) {
 			
 			/*var xmlhttp = new XMLHttpRequest();
-			var rs = '/api/v1/get';
+			var rs = '/api/v1/';
 
-			xmlhttp.open('GET', rs, true);
+			xmlhttp.open('GET', rs+"get", true);
 
 			xmlhttp.timeout = timeout || 2000;
 
@@ -761,7 +794,7 @@
 					if(xmlhttp.status == 200) {
 						try {*/
 							success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
-							success1(JSON.parse( "{\"TD\":[10, 2, 3, 4, 3, 11, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 15, 2, 3, 4, 3, 4, 5, 12]}" ));
+							success1(JSON.parse( "{\"lp\":[10, 2, 3, 4, 3, 11, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 15.451, 2, 3, 4, 3, 4, 5, 12]}" ));
 			/*			}
 						catch (E) {
 							error("Fail to parse json");
@@ -780,7 +813,7 @@
 
 			if(needBar) {
 
-				xmlhttp1.open('GET', rs+"1", true);
+				xmlhttp1.open('GET', rs+"lp", true);
 
 				xmlhttp1.timeout = timeout || 2000;
 
@@ -866,12 +899,12 @@
 					document.getElementById("power").innerHTML	= data.P.toFixed(1).toString();
 					document.getElementById("voltage").innerHTML  = data.U.toFixed(1).toString();
 
-					setTimeout(refreshData, 100000);
+					setTimeout(refreshData, 1000);
 					
 				},
 				function(data) {
 					error_counter = 0;
-					barprops.data = data.TD;
+					barprops.data = data.lp;
 					document.getElementById("bar").innerHTML = "";
 					chart.bar('bar', barprops);
 				},
@@ -897,7 +930,7 @@
 					
 					setTimeout(refreshData, 3000);
 				},
-				100000
+				1000
 			);
 			//elBar.mouseup();
 		}
@@ -978,7 +1011,7 @@
 			<div class="section-row">
 				<div class="section">
 					<h2>График потребления</h2>
-					<div class="section-body">
+					<div class="barcht">
 						<strong id="tdata"></strong>
 					</div>
 					<div class="section-body">
