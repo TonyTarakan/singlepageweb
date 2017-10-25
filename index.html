@@ -9,7 +9,7 @@
 	html
 	{
 		color:rgba(0,0,0,0.7);
-		font-family:VAGRoundedStdThin,Arial,Helvetica,Sans-Serif
+		font-family:Arial,Helvetica,Sans-Serif;
 	}
 	body
 	{
@@ -23,6 +23,9 @@
 	}
 	.content
 	{
+		-moz-user-select: none;
+		-khtml-user-select: none;
+		user-select: none;
 		display:block;
 		height:100%
 	}
@@ -31,7 +34,6 @@
 		height:150px;
 		width:100%;
 		display:table;
-		ackground-color:#fff;
 		margin-bottom:3rem;
 		box-shadow:0 2px 10px 0 rgba(0,0,0,0.14),0 1px 5px 0 rgba(0,0,0,0.12),0 3px 1px -2px rgba(0,0,0,0.2);
 		position:relative
@@ -50,12 +52,14 @@
 		display:flex;
 		flex-direction:row;
 		flex-wrap:nowrap;
-		justify-content:center
+		justify-content:center;
+		text-align:center
 	}
 	.title-logo
 	{
 		padding-top:10px;
 		display:flex;
+		height:50px;
 		flex-direction:row;
 		flex-wrap:nowrap;
 		justify-content:center
@@ -117,7 +121,7 @@
 		justify-content:center;
 		width:100%
 	}
-	.subsection
+	.ss
 	{
 		display:flex;
 		flex-direction:row;
@@ -128,8 +132,10 @@
 	.sss
 	{
 		display:flex;
+		justify-content:center;
 		flex-direction:column;
-		text-align:left
+		text-align:left;
+		line-height: 0;
 	}
 	.section h2
 	{
@@ -141,28 +147,36 @@
 	}
 	.conic:hover
 	{
-	    opacity: 0.3;
-	}
-	.ylabel
-	{
-	    -moz-user-select: none;
-		-khtml-user-select: none;
-		user-select: none
+		opacity: 0.3;
 	}
 	.chartBar
 	{
-	    fill:steelblue;
-	    stroke:black;
-	    stroke-width:0.1;
-	    stroke-opacity:0.1;
-	    display:flex;
+		fill:steelblue;
+		stroke:black;
+		stroke-width:0.1;
+		stroke-opacity:0.1;
+		display:flex;
 		flex-direction:row;
-		flex-wrap:nowrap
+		flex-wrap:nowrap;
+		display: flex;
+		justify-content:center;
 	}
 	.chartBar:hover
 	{
-	    fill:#F2635F;
-	    opacity:0.7
+		opacity:0.7;
+		box-shadow:0 2px 20px 0 rgba(0,0,0,0.3),0 1px 5px 0 rgba(0,0,0,0.3),0 3px 1px -2px rgba(0,0,0,0.3)
+	}
+	.barch
+	{
+		width:100%;
+		height:400px;
+		font-size:1.4rem;
+		fill:#00a5cd
+	}
+	.barcht
+	{
+		margin-top: 0.4rem;
+		font-size:1.4rem
 	}
 	@media only screen and (max-width: 600px)
 	{
@@ -194,12 +208,26 @@
 		{
 			font-size:1.0rem
 		}
+		.barch
+		{
+			height:200px;
+			font-size:0.8rem
+		}
+		.barcht
+		{
+			font-size:1.1rem;
+		}
 	}
 	@media only screen and (min-width: 600px) and (max-width: 768px)
 	{
 		.section h2
 		{
 			font-size:1.2rem
+		}
+		.barch
+		{
+			height:300px;
+			font-size:1rem
 		}
 	}
 	</style>
@@ -211,539 +239,553 @@
 	<script type="text/javascript">
 
 
-		krapAttr = {
-		    width: 'width',
-		    height: 'height',
-		    id: 'id',
-		    class: 'class',
-		    undefined: 'undefined'
+		elAttr = {
+			width: 'width',
+			height: 'height',
+			id: 'id',
+			class: 'class',
+			undefined: 'undefined'
 		};
 
 		fnSvgElement = {
-		    newElement: 'undefined',
-		    createNewElement: function (element) {
-		        this.newElement = document.createElementNS("http://www.w3.org/2000/svg", element);
-		        return this;
-		    },
-		    addAttribute: function (key, value) {
-		        if (this.newElement !== 'undefined')
-		            this.newElement.setAttribute(key, value);
-		        else {
-		            throw Error();
-		        }
-		        return this;
-		    },
-		    addText: function (text) {
-		        if (this.newElement !== 'undefined') {
-		            this.newElement.appendChild(document.createTextNode(text));
-		        } else {
-		            throw Error();
-		        }
-		        return this;
-		    },
-		    toDomString: function () {
-		        return this.newElement;
-		    }
+			newElement: 'undefined',
+			createNewElement: function (element) {
+				this.newElement = document.createElementNS("http://www.w3.org/2000/svg", element);
+				return this;
+			},
+			addAttribute: function (key, value) {
+				if (this.newElement !== 'undefined')
+					this.newElement.setAttribute(key, value);
+				else {
+					throw Error();
+				}
+				return this;
+			},
+			toDomString: function () {
+				return this.newElement;
+			}
 		};
 
 		newObj = {
 			bar:function(){
-				var b = Object.assign({},krapBar);
+				var b = Object.assign({},elBar);
 				return b;
 			}
-		}
+		};
 
-		krapUtil = {
-		    calcTot: function (data) {
-		        var tot = data.reduce(function (previousValue, currentValue) {
-		            return previousValue + currentValue;
-		        });
-		        return tot;
-		    },
-		    getPosition: function (el) {
-		        var rect = el.getBoundingClientRect(),
-		                scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
-		                scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-		        return {x: rect.top + scrollTop, y: rect.left + scrollLeft};
-		    },
+		elUtil = {
+			calcTot: function (data) {
+				var tot = data.reduce(function (previousValue, currentValue) {
+					return previousValue + currentValue;
+				});
+				return tot;
+			},
+			getPosition: function (el) {
+				var rect = el.getBoundingClientRect(),
+						scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+						scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+				return {x: rect.top + scrollTop, y: rect.left + scrollLeft};
+			},
 			getSubArray:function(arr,start,end) {
 				return arr.slice(start,end+1);
 			}
 		};
 
-		krapStats = {
-		    calcRangeOnSorted: function (arr) {
-		        var len = arr.length;
-		        var range = (arr[len-1] - arr[0]) / (len-1);
-		        return range;
-		    },
-		    calcRangeOnNonSortedData: function (arr) {
-		        arr.sort(function(a,b){
-		            return a-b;
-		        });
-		        var len = arr.length;
-		        var range = (arr[len-1] - arr[0]) / (len-1);
-		        return Math.ceil(range);
-		    }
+		elStats = {
+			calcRangeOnNonSortedData: function (arr) {
+				arr.sort(function(a,b){
+					return a-b;
+				});
+				var len = arr.length;
+				var range = (arr[len-1] - arr[0]) / (len-1);
+				return Math.ceil(range);
+			}
 		};
 
 		set = {
-		    text: function (x, y, text, style,tclass,font,fontSize) {
-		        var t_node = fnSvgElement.createNewElement('text')
-		                .addAttribute('x', x)
-		                .addAttribute('y', y)
-		                .addText(text)
-		                .addAttribute('class',tclass)
-		                .addAttribute('font-family',font)
-		                .addAttribute('font-size',fontSize)
-		                .toDomString();
-		        return t_node;
-		    },
-		    tick: function(x1,x2,y2,stroke_size,stroke_color) {
-		        var tick = fnSvgElement.createNewElement('line')
-		                .addAttribute('x1', x1)
-		                .addAttribute('y1', y2)
-		                .addAttribute('x2', x2)
-		                .addAttribute('y2', y2)
-		                .addAttribute('class', 'tick')
-		                .addAttribute('stroke-width', stroke_size)
-		                .addAttribute('stroke', stroke_color)
-		                .addAttribute('fill', stroke_color)
-		                .toDomString();
-		        return tick;        
-		    },
-		    bar: function(x,y,barWidth,barHeight,barClass) {
-		        var bar = fnSvgElement.createNewElement('rect')
-		                .addAttribute('x', x)
-		                .addAttribute('y', y)
-		                .addAttribute('width', barWidth)
-		                .addAttribute('height', barHeight)
-		                .addAttribute('class', barClass)
-		                .toDomString();
-		        return bar;
-		    }   
+			bar: function(x,y,id,barWidth,barHeight,barClass) {
+				var bar = fnSvgElement.createNewElement('rect')
+						.addAttribute('x', x)
+						.addAttribute('y', y)
+						.addAttribute('id', id)
+						.addAttribute('width', barWidth)
+						.addAttribute('height', barHeight)
+						.addAttribute('class', barClass)
+						.toDomString();
+				return bar;
+			}
 		};
 
 		function generateArcSector(svg, cX, cY, radius, datum, colour, iniA, endA, sweep) {
-		    cX = parseInt(cX);
-		    cY = parseInt(cY);
-		    radius = parseInt(radius);
-		    iniA = parseInt(iniA);
-		    var x1 = cX + radius * Math.cos((iniA) * Math.PI / 180);
-		    var y1 = cY + radius * Math.sin((iniA) * Math.PI / 180);
+			cX = parseFloat(cX);
+			cY = parseFloat(cY);
+			radius = parseFloat(radius);
+			iniA = parseFloat(iniA);
+			var x1 = cX + radius * Math.cos((iniA) * Math.PI / 180);
+			var y1 = cY + radius * Math.sin((iniA) * Math.PI / 180);
 
-		    var x2 = cX + radius * Math.cos((endA) * Math.PI / 180);
-		    var y2 = cY + radius * Math.sin((endA) * Math.PI / 180);
+			var x2 = cX + radius * Math.cos((endA) * Math.PI / 180);
+			var y2 = cY + radius * Math.sin((endA) * Math.PI / 180);
 
-		    var path = 'M' + cX + ',' + cY + ' L' + x1 + ',' + y1 + ' A' + radius + ',' + radius + ' 0 ' + sweep + ',1 ' + x2 + ',' + y2 + ' z';
-		    var pathNode = fnSvgElement.createNewElement('path')
-		            .addAttribute('d', path)
-		            .addAttribute('stroke-width', '0.1')
-		            .addAttribute('class', 'conic')
-		            .addAttribute('stroke', 'black')
-		            .addAttribute('fill', colour)
-		            .toDomString();
-		    var title = fnSvgElement.createNewElement('title').toDomString();
+
+			var path = 'M' + cX + ' ' + cY +   ' L' + x1 + ' ' + y1 +	' A' + radius + ' ' + radius + ', 0, ' + sweep + ', 1, ' + x2 + ' ' + y2 + ' z';
+			var pathNode = fnSvgElement.createNewElement('path')
+					.addAttribute('d', path)
+					.addAttribute('stroke-width', '0.1')
+					.addAttribute('class', 'conic')
+					.addAttribute('stroke', 'black')
+					.addAttribute('fill', colour)
+					.toDomString();
+			var title = fnSvgElement.createNewElement('title').toDomString();
 			title.textContent = datum + '%';
 	 		pathNode.appendChild(title);
 
 	 		svg.appendChild(pathNode);
 		}
 
-		krapException = {
-		    generalCheck: function (actual, expected) {
-		        if (actual === expected) {
-		            return !0;
-		        } else {
-		            return !1;
-		        }
-		    },
-		    checkId: function (id) {
-		        if (this.generalCheck(id, null)) {
-		            throw Error();
-		        } else {
-		            return !0;
-		        }
-		    },
-		    checkObject: function (obj) {
-		        if (this.generalCheck(obj, krapAttr.undefined)) {
-		            throw Error();
-		        } else {
-		            return !0;
-		        }
-		    }
+		elException = {
+			generalCheck: function (actual, expected) {
+				if (actual === expected) {
+					return !0;
+				} else {
+					return !1;
+				}
+			},
+			checkId: function (id) {
+				if (this.generalCheck(id, null)) {
+					throw Error();
+				} else {
+					return !0;
+				}
+			},
+			checkObject: function (obj) {
+				if (this.generalCheck(obj, elAttr.undefined)) {
+					throw Error();
+				} else {
+					return !0;
+				}
+			}
 		};
 
-		krapPie = {
-		    svgObject: 'undefined',
-		    properties: {
-		        width: '',
-		        height: '',
-		        data: [],
-		        colours: []
-		    },
-		    create: function (eleId) {
-		        var div = document.getElementById(eleId);
-		        if (krapException.checkId(div)) {
-		            this.svgObject = fnSvgElement.createNewElement('svg')
-		           			.addAttribute('width', this.properties.width)
-		                    .addAttribute('height', this.properties.height)
-		                    .toDomString();
-		            div.appendChild(this.svgObject);
-		            return this;
-		        } else {
-		            throw Error();
-		        }
-		    },
-		    generate: function () {
-		        var ht = parseInt(this.properties.height);
-		        var wt = parseInt(this.properties.width);
-		        var tot = krapUtil.calcTot(this.properties.data);
-		        var radius = 0.9* (2*ht) / 4;
-		        var len = this.properties.data.length;
-		        var cl = this.properties.colours.length;
-		        var iniA = 0;
-		        var endA = 0;
-		        var cx = wt / 2;
-		        var cy = ht / 2;
-		        var sweep = 0;
-		        gobj = fnSvgElement.createNewElement('g').toDomString();
+		elPie = {
+			svgObject: 'undefined',
+			properties: {
+				width: '',
+				height: '',
+				data: [],
+				colours: []
+			},
+			create: function (eleId) {
+				var div = document.getElementById(eleId);
+				if (elException.checkId(div)) {
+					this.svgObject = fnSvgElement.createNewElement('svg')
+				   			.addAttribute('width', this.properties.width)
+							.addAttribute('height', this.properties.height)
+							.toDomString();
+					div.appendChild(this.svgObject);
+					return this;
+				} else {
+					throw Error();
+				}
+			},
+			generate: function () {
+				var ht = parseInt(this.properties.height);
+				var wt = parseInt(this.properties.width);
+				var tot = elUtil.calcTot(this.properties.data);
+				var radius = 0.9* (2*ht) / 4;
+				var len = this.properties.data.length;
+				var iniA = 0;
+				var endA = 0;
+				var cx = wt / 2;
+				var cy = ht / 2;
+				var sweep, d, v;
+				gobj = fnSvgElement.createNewElement('g').toDomString();
 
-		        for (var i = 0; i < len; i++) {
-		            endA = iniA + ((360 * this.properties.data[i]) / tot);
+				for (var i = 0; i < len; i++) {
+					d = this.properties.data[i];
 
-		            if (this.properties.data[i] > (tot / 2))
-		            {
-		                sweep = 1;
-		            }
-		            generateArcSector(gobj, cx, cy, radius, this.properties.data[i], this.properties.colours[i % cl], iniA, endA, sweep);
-		            iniA = endA;
+					v = ((360 * d) / tot);
+					if (v > 359.999) v = 359.999;
+					//console.log(i, v);
 
-		        }
-		        this.svgObject.appendChild(gobj);
-		    },
-		    attribute: function (attr, value) {
-		        krapException.checkObject(this.svgObject);
-		        this.properties[attr] = value;
-		        this.svgObject.setAttribute(attr, value);
-		        return this;
-		    },
-		    data: function (dt) {
-		        krapException.checkObject(this.svgObject);
-		        this.properties.data = dt;
-		        this.generate();
-		        return this;
-		    }
+					endA = iniA + v;
+					
+					if (d > (tot / 2)) sweep = 1;
+			   		else sweep = 0;
+
+					generateArcSector(gobj, cx, cy, radius, (d/tot*100).toFixed(3), this.properties.colours[i], iniA, endA, sweep);
+
+
+					//generateArcSector(gobj, cx, cy, radius, (this.properties.data[i]/tot*100).toFixed(3), this.properties.colours[i], iniA, endA, sweep);
+
+
+
+					iniA = endA;
+
+				}
+				this.svgObject.appendChild(gobj);
+			},
+			attribute: function (attr, value) {
+				elException.checkObject(this.svgObject);
+				this.properties[attr] = value;
+				this.svgObject.setAttribute(attr, value);
+				return this;
+			},
+			data: function (dt) {
+				elException.checkObject(this.svgObject);
+				this.properties.data = dt;
+				this.generate();
+				return this;
+			}
 		};
 
 		svg = {
-		    svgObj: 'undefined',
-		    generate: function (height, width) {
-		        this.svgObj = fnSvgElement.createNewElement('svg')
-		                .addAttribute('width', width)
-		                .addAttribute('height', height)
-		                .addAttribute('preserveAspectRatio', "none")
-		                .toDomString();
-		        return this.svgObj;
-		    }
+			svgObj: 'undefined',
+			generate: function (height, width) {
+				this.svgObj = fnSvgElement.createNewElement('svg')
+						.addAttribute('width', width)
+						//.addAttribute('height', height)
+						//.addAttribute('preserveAspectRatio', "none") ???
+						.addAttribute('class', 'barch')
+						.toDomString();
+				return this.svgObj;
+			}
 		};
 
 		axis = {
-		    props: {
-		        'SX': 0,
-		        'SY': 0,
-		        'OX': 0,
-		        'OY': 0,
-		        'EX': 0,
-		        'EY': 0,
-		        'LOX': 0,
-		        'LOY': 0,
-		        'svg': '',
-		        'xdataRotation': 90,
-		        'xCords': [],
-		        'yCords': [],
-		        'yTickLabels': [],
-		        'baseUnit' : 0
-		    },
-		    generateXAxis: function () {
-		        var xPath = pathG.move(this.props.SX, this.props.SY) + ' ' + pathG.lineTo(this.props.OX, this.props.OY);
-		        pathObj = fnSvgElement.createNewElement('path')
-		                .addAttribute('d', xPath)
-		                .addAttribute('stroke-width', '1')
-		                .addAttribute('class', 'xAxis')
-		                .addAttribute('stroke', 'black')
-		                .addAttribute('fill', 'none')
-		                .toDomString();
-		        this.props.svg.appendChild(pathObj);
+			props: {
+				'SX': 0,
+				'SY': 0,
+				'OX': 0,
+				'OY': 0,
+				'EX': 0,
+				'EY': 0,
+				'LOX': 0,
+				'': '',
+				'xdataRotation': 90,
+				'xCords': [],
+				'yCords': [],
+				'yAxPos': [],
+				'baseUnit' : 0
+			},
+			generateAxis: function (level, color, text) {
+				var yPath = pathG.move(this.props.OX, this.props.OY-level) + ' ' + pathG.lineTo(this.props.EX, this.props.EY-level);
+				pathObj = fnSvgElement.createNewElement('path')
+						.addAttribute('d', yPath)
+						.addAttribute('stroke-width', '1')
+						.addAttribute('stroke', color)
+						//.addAttribute('fill', 'none')
+						//.addAttribute('filter', 'url(#shadowfilter)')
+						.toDomString();
+				this.props.svg.appendChild(pathObj);
+				if(text) {
+					var titlet = fnSvgElement.createNewElement('text')
+												.addAttribute('x', this.props.OX)
+												.addAttribute('y', this.props.OY-level-5)
+												.addAttribute('class', 'barch')
+												.toDomString();
+												titlet.textContent = this.props.yAxPos + ' кВт•ч';
+					this.props.svg.appendChild(titlet);
+				}
+			},
+			calculateAxis: function (width, height) {
+				
+				var startX = this.props.SX = 0.05*width;
+				var startY = this.props.SY = 0;
+				this.props.OX = startX;
+				var oY = this.props.OY = height - 0.1 * height;
+				var endX = this.props.EX = width - startX;
+				this.props.EY = oY;
+				this.props.LOX = endX - startX;
 
-		    },
-		    generateYAxis: function () {
-		        var yPath = pathG.move(this.props.OX, this.props.OY) + ' ' + pathG.lineTo(this.props.EX, this.props.EY);
-		        pathObj = fnSvgElement.createNewElement('path')
-		                .addAttribute('d', yPath)
-		                .addAttribute('stroke-width', '1')
-		                .addAttribute('class', 'yAxis')
-		                .addAttribute('stroke', 'black')
-		                .addAttribute('fill', 'none')
-		                .toDomString();
-		        this.props.svg.appendChild(pathObj);
-		    },
-		    calculateAxis: function (width, height) {
-		        var startX = this.props.SX = (0.1) * width;
-		        var startY = this.props.SY = (0.05) * height;
-		        var oX = this.props.OX = startX;
-		        var oY = this.props.OY = height - (0.1 * height);
-		        var endX = this.props.EX = width - (0.06 * width);
-		        var endY = this.props.EY = oY;
-		        var lengthOfYAxis = this.props.LOY = oY - startY;
-		        var lengthOfXAxis = this.props.LOX = endX - oX;
-		    },
-		    addYAxisTicks: function () {
-		        var x = this.props.SX;
-		        var y = [];
-		        var y_text = [];
-		        var oy = this.props.OY;
-		        var len = this.props.yTickLabels.length;
+				var ycords = this.props.yCords;
+				var length = ycords.length;
+				var range = elStats.calcRangeOnNonSortedData(ycords);
+				var max = ycords[length - 1];
+				this.props.yAxPos = Math.ceil(max);
+				//console.log(max, range);
+				var scaleF = 0;
+				if (max % range === 0)
+					scaleF = (max / range);
+				else
+					scaleF = (max / range) + 1;
+				var a_diff = (oY - startY) / (scaleF+1);
 
-		        if(len === 0)
-		        {
-		            var ycords = this.props.yCords;
-		            var length = ycords.length;
-		            var range = krapStats.calcRangeOnNonSortedData(ycords);
-		            var i = 0;
-		            var max = ycords[length - 1];
-		            var iniT = ycords[0];
-		            var scaleF = 0;
-		            if (max % range === 0)
-		                scaleF = (max / range);
-		            else
-		                scaleF = (max / range) + 1;
-		            var a_diff = this.props.LOY / (scaleF+1);
-		            
-		            var ny = oy;
-		            y.push(ny);
-		            y_text.push(iniT-range);
-		            for (var i = 0; i <=scaleF; i++) {
-		                ny = ny - a_diff;
-		                y.push(ny);
-		                y_text.push((range)*i+iniT);
-		            }
-		            
-		        } else {
-		            var yt = this.props.yTickLabels;
-		            var loy = this.props.LOY;
-		            for (var data in yt)
-		            {
-		                y_text.push(data);
-		                var y_point = yt[data];
-		                var ny = oy - (y_point * loy);
-		                y.push(ny);
-		            }
-
-		        }
-		       for(var i in y) {
-		           this.props.svg.appendChild(set.tick(x-5,x-1,y[i],1,'black'));
-		           var text = y_text[i];
-		           var tlen = 3*text.toString().length;
-		           this.props.svg.appendChild(set.text(x-(tlen+15),y[i],text,'', 'ylabel','verdana','10'));
-		       }
-		       this.props.yTickLabels=y_text;
-		       this.props.aDiff = a_diff/range;
-		       this.props.baseUnit = y_text[0];
-		    },
-		    generateSimpleAxis: function (svgObj, xcords, ycords, yticks, xdataR, height, width) {
-		    	width = document.getElementById("bar").offsetWidth;
-		        this.props.svg = svgObj;
-		        this.props.xCords = xcords;
-		        this.props.yCords = ycords;
-		        this.props.yTickLabels = yticks;
-		        this.props.xdataRotation = xdataR;
-		        this.calculateAxis(width, height);
-		        this.generateXAxis();
-		        this.generateYAxis();
-		        this.addYAxisTicks();
-		    }
+				this.props.aDiff = a_diff/range;
+				//console.log("adif",this.props.aDiff);
+			},
+			generateSimpleAxis: function (svgObj, xcords, ycords, yticks, xdataR, height, width) {
+				width = document.getElementById("bar").clientWidth;
+				height = document.getElementById("bar").clientHeight;
+				this.props.svg = svgObj;
+				this.props.xCords = xcords;
+				this.props.yCords = ycords;
+				this.props.xdataRotation = xdataR;
+				this.calculateAxis(width, height);
+				this.generateAxis(0, 'black');
+				for (var i = 4; i > 0; i--) {
+					this.generateAxis(this.props.yAxPos*i*this.props.aDiff/4, '#00a5cd', !(i%4))
+				}
+			}
 		};
 
 		pathG = {
-		    move: function (x, y) {
-		        return 'M' + x + ',' + y;
-		    },
-		    lineTo: function (x, y) {
-		        return 'L' + x + ',' + y;
-		    },
-		    completePath: function () {
-		        return 'z';
-		    }
+			move: function (x, y) {
+				return 'M' + x + ',' + y;
+			},
+			lineTo: function (x, y) {
+				return 'L' + x + ',' + y;
+			},
+			completePath: function () {
+				return 'z';
+			}
 		};
 
 		chart = {
-		    pie: function (id, props) {
-		        for (var i in props) {
-		            krapPie.properties[i] = props[i];
+			pie: function (id, props) {
+				for (var i in props) {
+					elPie.properties[i] = props[i];
 
-		        }
-		        krapPie.create(id);
-		        krapPie.generate();
-		    },
-		    bar: function (id, props) {
-		        var bar = newObj.bar();
+				}
+				elPie.create(id);
+				elPie.generate();
+			},
+			bar: function (id, props) {
+				var bar = newObj.bar();
 				
 				for (var i in props) {
-		            bar.props[i] = props[i];
-		        }
-		        bar.generate(id);
-		    }
+					bar.props[i] = props[i];
+				}
+				bar.generate(id);
+			}
 		};
 
-		krapBar = {
-		    props: {
-		        'width': "100%",
-		        'height': 400,
-		        'data': {},
-		        'xCords': [],
-		        'yCords': [],
-		        'yCordsSorted': [],
-		        'divId': 'undefined',
-		        'datumsPerScreen': 4,
-		        'colours': {},
-		        'barColours': 'blue',
-		        'yTickLabels': {},
-		        'svgObj': 'undefined',
-		        'axisType': 'generateSimpleAxis',
-		        'aProps': {},
-				'down' : false,
+		var barprops = {			
+			'data': [],
+			'xCords': [],
+			'yCords': [],
+			'yCordsSorted': [],
+			'datumsPerScreen': 12,
+			'colours': {},
+			'barColours': '',
+			'yTickLabels': {},
+			'start': 36, // hardcoded draw area (48-datumsPerScreen)
+			'svgObj': 'undefined',
+			'axisType': 'generateSimpleAxis'
+		};
+
+		elBar = {
+			props: {
+				'width': 0,
+				'height': 0,
+				'data': [],
+				"time": 0,
+				'xCords': [],
+				'yCords': [],
+				'yCordsSorted': [],
+				'datumsPerScreen': 4,
+				'colours': {},
+				'barColours': 'blue',
+				'yTickLabels': {},
+				'svgObj': 'undefined',
+				'prevBar': 'undefined',
+				'axisType': 'generateSimpleAxis',
+				'aProps': {},
 				'prevPos': 0,
 				'start':0,
 				'end':0,
 				'length':0,
 				'groupBar':'undefined'
-		    },
+			},
 			removeBars:function() {
 				var group = document.getElementsByClassName('bargroup')[0];
 			},
-		    dragSvg : function(event) {
-				if(this.props.down == true) {
+			dragSvg : function(event) {
+				if(event.buttons!=0) {
 					var presentPos;
-					try{  
-						document.createEvent("TouchEvent");  
+					if ('ontouchstart' in window)
 						presentPos = event.touches[0].clientX; 
-					} catch (e) {  
+					else
 						presentPos = event.screenX;
-					}
-					if(this.props.prevPos!=0){
+
+					//console.log("PrevPos", this.props.prevPos, "presentPos", presentPos);
+					if(this.props.prevPos!=0) {
 
 						var diff = (presentPos-this.props.prevPos);
 						//console.log(diff);
-						if(diff<-2&&this.props.end<this.props.length){
-							this.props.start= this.props.start+1;
+						if(diff<-6&&this.props.start+this.props.datumsPerScreen<this.props.length) {
+							this.props.start = this.props.start+1;
 							this.props.end = this.props.end+1;
 							this.props.svgObj.removeChild(this.props.groupBar);
-							this.generateBars(this.props.start,this.props.end);
+							this.generateBars(this.props.start+1,this.props.start+this.props.datumsPerScreen);
+							//console.log("GenBars(<-):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
+							this.props.prevPos = presentPos;
 						}
-						if(diff>2&&this.props.start>=0){
+						if(diff>6&&this.props.start>0) {
 							this.props.start= this.props.start-1;
 							this.props.end = this.props.end-1;
 							this.props.svgObj.removeChild(this.props.groupBar);
-							this.generateBars(this.props.start,this.props.end);
+							this.generateBars(this.props.start+1,this.props.start+this.props.datumsPerScreen);
+							//console.log("GenBars(->):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
+							this.props.prevPos = presentPos;
 						}
 					}
-					this.props.prevPos = presentPos;
+					else
+						this.props.prevPos = presentPos;
+					barprops.start = this.props.start;
+					barprops.end = this.props.end;
 				}
-		    },
+			},
 			mousedown : function(event) {
-				this.props.down=true;
+				//this.props.down=true;
+				if ('ontouchstart' in window)
+					this.props.prevPos = event.touches[0].clientX;
+				else
+					this.props.prevPos = event.screenX;
+				return false;
 			},
-			mouseup : function(event) {
-				this.props.down=false;
+			ttShow : function(event) {
+				var t = event.target;
+				var td = document.getElementById("tdata");
+				td.textContent = t.firstChild.textContent;
+				t.style.fill = '#F2635F';
+				try {
+					if(this.props.prevBar != t) 
+						this.props.prevBar.style.fill = 'steelblue';
+				}
+				catch (e) {}
+				this.props.prevBar = t;
 			},
-		    generateBars : function(start,end) {
-		        var L = this.props.aProps.yTickLabels.length;
-		        var max = this.props.aProps.yTickLabels[L-1];
-		        var LOY = this.props.aProps.LOY;
-		        var LOX = this.props.aProps.LOX;
-		        var oX =  this.props.aProps.OX;
-		        var oY =  this.props.aProps.OY;
-		        var bps = end-start+1;
-		        var svg = this.props.svgObj;
-		        var barWidth =  3*LOX/(4*bps);
-		        var distBtwBar = LOX/(4*bps);
-		        var x = oX+distBtwBar;
-		        var y = oY;
+			generateBars : function(start,end) {
+				var LOX = this.props.aProps.LOX;
+				var oX =  this.props.aProps.OX;
+				var oY =  this.props.aProps.OY;
+				var bps = end-start+1;
+				var svg = this.props.svgObj;
+				var barWidth =  3*LOX/(4*bps);
+				var distBtwBar = LOX/(4*bps);
+				var x = oX+distBtwBar/2;
+				var y = oY;
 				var group = fnSvgElement.createNewElement('g')
 							.addAttribute('class','bargroup')
+							.addAttribute('onmousedown','return false;')
+							.addAttribute('ondragstart','return false;')
+							.addAttribute('ondrop','return false;')
 							.toDomString();
-							
-		        for(var i=start;i<=end;i++) {
-		            var barHeight = ((parseInt(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
-		            barPosition = oY-barHeight;
-		            var bar = set.bar(x,barPosition,barWidth,barHeight,'chartBar');
-		                x=x+barWidth+distBtwBar;
 
-		            var title = fnSvgElement.createNewElement('title').toDomString();
-					title.textContent = this.props.xCords[i-1] + ': ' + this.props.yCords[i-1] + ' кВт•ч';
-		     		bar.appendChild(title);
+				for(var i=start;i<=end;i++) {
+					var barHeight = ((parseInt(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
+					barPosition = oY-barHeight;
+					var bar = set.bar(x,barPosition,'b'+i,barWidth,barHeight,'chartBar');
 
-		     		group.appendChild(bar);
-			    }
+					if(bar.id == this.props.prevBar.id) {
+						bar.style.fill = '#F2635F';
+					}
+				
+
+					/*var titlet = fnSvgElement.createNewElement('text')
+											.addAttribute('id','tt'+i )
+											.addAttribute('x', x)
+											.addAttribute('y', barPosition)
+											.addAttribute('position', 'relative')
+											.addText(this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' кВт•ч')
+											.addAttribute('class','tooltip')
+											.addAttribute('font-family','Arial')
+											.addAttribute('font-size',20)
+											.addAttribute('visibility','hidden')
+											.toDomString();*/
+
+					
+					var title = fnSvgElement.createNewElement('title').toDomString();
+					title.textContent = this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' кВт•ч';
+					bar.appendChild(title);
+
+			 		//group.appendChild(titlet);
+
+					bar.addEventListener('mousedown', this.ttShow.bind(this));
+					//"var tt = document.getElementById(\"tt"+i+"\"); tt.style.x = event.screenX; tt.style.y = event.screenY;tt.style.visibility='visible';"); // this.firstChild.style.visibility='visible'
+
+
+			 		group.appendChild(bar);
+
+			 		x=x+barWidth+distBtwBar;
+				}
+
+				
+
 				this.props.groupBar = group;
 				svg.appendChild(group);
-		    },
-		    generate: function (id, properties) {
-		    	delete document.getElementById(id)
-		        this.props.divId = id;
-		        for (var i in properties) {
-		            this.props[i] = properties[i];
-		        }
-		        var data = this.props['data'];
-		        var xCords = [];
-		        var yCords = [];
-		        for (var i in data) {
-		            xCords.push(i);
-		            yCords.push(data[i]);
-		        }
-		        this.props.xCords = xCords;
-		        this.props.yCords = yCords;
-				this.props.length = yCords.length;
-		        this.props.yCordsSorted = Object.assign([],yCords);
-		        this.props.svgObj = svg.generate(this.props.height, this.props.width);
-		        window['axis'][this.props.axisType](this.props.svgObj, xCords, this.props.yCordsSorted,[],0, this.props.height, this.props.width); 
-		        document.getElementById(id).appendChild(this.props.svgObj);
-		        this.props.aProps = axis.props;
-		        this.generateBars(1,this.props.datumsPerScreen);
-				this.props.start=1;
-				this.props.end=this.props.datumsPerScreen;
-		        this.props.svgObj.addEventListener('mousemove',this.dragSvg.bind(this));
-				this.props.svgObj.addEventListener('mousedown',this.mousedown.bind(this));
-		        this.props.svgObj.addEventListener('mouseup',this.mouseup.bind(this));
+			},
+			generate: function (id, properties) {
+				delete document.getElementById(id);
+				for (var i in properties) {
+					this.props[i] = properties[i];
+				}
+				var data = this.props['data'];
+				var xCords = [];
+				var yCords = [];
 
-		        this.props.svgObj.addEventListener('touchmove',this.dragSvg.bind(this));
-		        this.props.svgObj.addEventListener('touchstart',this.mousedown.bind(this));
-		        this.props.svgObj.addEventListener('touchend',this.mouseup.bind(this));
-		    }
+				var d = new Date(this.props['time']*1000);
+				d.setMinutes( Math.floor(d.getMinutes()/30)*30 );
+				d.setDate(d.getDate() - 1);
+
+				for ( var i = 0; i < data.length; i++ ) {
+
+
+					var hours1 = d.getHours();
+					var minutes1 =  parseInt( ("0" + d.getMinutes()).substr(-2) );
+
+					d.setMinutes(d.getMinutes() + 30);
+					
+					var hours = d.getHours();
+					var minutes =  parseInt( ("0" + d.getMinutes()).substr(-2) );
+
+
+					xCords.push("с " + hours1 + ":" + (minutes1>0 ? minutes1 : "00") + " по " + hours + ":" + (minutes>0 ? minutes : "00"));
+					yCords.push(data[i]);
+
+					
+				}
+				this.props.xCords = xCords;
+				this.props.yCords = yCords;
+				this.props.length = yCords.length;
+				this.props.yCordsSorted = Object.assign([],yCords);
+				this.props.svgObj = svg.generate(this.props.height, this.props.width);
+				window['axis'][this.props.axisType](this.props.svgObj, xCords, this.props.yCordsSorted,[],0, this.props.height, this.props.width); 
+				document.getElementById(id).appendChild(this.props.svgObj);
+				this.props.aProps = axis.props;
+				this.generateBars(barprops.start+1, barprops.start+this.props.datumsPerScreen);
+				//this.props.start=barprops.start+1;
+				//console.log(barprops.start, "to", barprops.start+this.props.datumsPerScreen);
+				this.props.end=this.props.datumsPerScreen;
+				this.props.svgObj.addEventListener('mousemove',this.dragSvg.bind(this));
+				this.props.svgObj.addEventListener('mousedown',this.mousedown.bind(this));
+
+				this.props.svgObj.addEventListener('touchmove',this.dragSvg.bind(this));
+				this.props.svgObj.addEventListener('touchstart',this.mousedown.bind(this));
+			}
 		}; 
 
 
 
 		var error_counter = 0;
+		var req_counter = 999999;
+		var needBar = true;
 
 		String.prototype.format = function() {
 			var formatted = this;
-			for( var arg in arguments ) {
+			for( var arg in arguments )
 				formatted = formatted.replace("{" + arg + "}", arguments[arg]);
-			}
+
 			return formatted;
-		}
+		};
 
-		function getXmlHttp() {
-			return new XMLHttpRequest();
-		}
+		function get_data(success, success1, error, timeout) {
+			
+			var xmlhttp = new XMLHttpRequest();
+			var rs = '/api/v1/';
 
-		function get_data(success, error, timeout) {
-
-			var xmlhttp = getXmlHttp();
-
-			xmlhttp.open('GET', '/api/v1/get', true);
+			xmlhttp.open('GET', rs+"get", true);
 
 			xmlhttp.timeout = timeout || 2000;
 
@@ -763,8 +805,37 @@
 
 				}
 			};
-
+			
 			xmlhttp.send(null);
+
+			var xmlhttp1 = new XMLHttpRequest();
+
+			if(needBar) {
+
+				xmlhttp1.open('GET', rs+"lp", true);
+
+				xmlhttp1.timeout = timeout || 2000;
+
+				xmlhttp1.onreadystatechange = function() {
+					if (xmlhttp1.readyState == XMLHttpRequest.DONE) {
+						if(xmlhttp1.status == 200) {
+							try {
+								success1(JSON.parse(xmlhttp1.responseText));
+								needBar = false;
+							}
+							catch (E) {
+								error("Fail to parse json");
+							}
+						}
+						else {
+							error(xmlhttp1.responseText);
+						}
+
+					}
+				};
+
+				xmlhttp1.send(null);		
+			}
 		}
 
 		function refreshData()
@@ -772,16 +843,69 @@
 			get_data(
 				function(data) {
 					error_counter = 0;
+					req_counter++;
+					if(req_counter > 29) {
+						needBar = true;
+						req_counter = 0;
+					}
 					document.getElementById("title").innerHTML="AS100 (#{0})".format(data.SN);
 
-					document.getElementById("energy_total").innerHTML  = (parseFloat(data.A1.toFixed(3)) + parseFloat(data.A2.toFixed(3)) + parseFloat(data.A3.toFixed(3))).toFixed(3).toString();
-					document.getElementById("energy1").innerHTML  = data.A1.toFixed(3).toString();
-					document.getElementById("energy2").innerHTML  = data.A2.toFixed(3).toString();
-					document.getElementById("energy3").innerHTML  = data.A3.toFixed(3).toString();
-					document.getElementById("power").innerHTML    = data.P.toFixed(0).toString();
+					var T1 = parseFloat(data.A1);
+					var T2 = parseFloat(data.A2);
+					var T3 = parseFloat(data.A3);
+					var T4 = parseFloat(data.A4);
+
+					var pp = {
+						'width': 260,
+						'height': 260,
+						'data': [],
+						'colours': ['#ff8678', '#ffbf00', '#4ec7ff', '#6ee7ff']
+					};
+
+					if(!isNaN(T1)) pp.data.push(T1);
+					if(!isNaN(T2)) pp.data.push(T2);
+					if(!isNaN(T3)) pp.data.push(T3);
+					if(!isNaN(T4)) pp.data.push(T4);
+					
+					barprops.time = parseInt(data.T);
+
+					if(pp.data.length > 1)
+					{
+						
+						
+
+						var sum = 0;
+						for (var i = 0; i < pp.data.length; i++) {
+							sum += pp.data[i];
+							document.getElementById("energy" + (i+1).toString()).innerHTML  = "<pre><span style='color:"+pp.colours[i]+"'>■</span> Тариф "+(i+1).toString()+": {0}</pre>".format(pp.data[i].toFixed(1).toString());
+						}
+
+						document.getElementById("pie").innerHTML = "";
+						chart.pie('pie', pp);
+						document.getElementById("energy_total").innerHTML  = "<br><pre>Сумма:     {0}</pre>".format(sum.toFixed(1).toString());
+
+					}
+					else
+					{	try {
+							el = document.getElementById("pies");
+							el.parentNode.removeChild(el);
+						} catch (e) {}
+						document.getElementById("energy_total").innerHTML = T1.toString();
+					}
+
+
+					
+					document.getElementById("power").innerHTML	= data.P.toFixed(1).toString();
 					document.getElementById("voltage").innerHTML  = data.U.toFixed(1).toString();
 
 					setTimeout(refreshData, 1000);
+					
+				},
+				function(data) {
+					error_counter = 0;
+					barprops.data = data.lp;
+					document.getElementById("bar").innerHTML = "";
+					chart.bar('bar', barprops);
 				},
 				function(error) {
 					if (error_counter > 3)
@@ -791,9 +915,11 @@
 						document.getElementById("energy1").innerHTML  = "";
 						document.getElementById("energy2").innerHTML  = "";
 						document.getElementById("energy3").innerHTML  = "";
+						document.getElementById("energy4").innerHTML  = "";
 						document.getElementById("pie").innerHTML  = "";
+						document.getElementById("tdata").innerHTML  = "";
 						document.getElementById("bar").innerHTML  = "";
-						document.getElementById("power").innerHTML    = "";
+						document.getElementById("power").innerHTML	= "";
 						document.getElementById("voltage").innerHTML  = "";
 					}
 					else
@@ -805,43 +931,20 @@
 				},
 				1000
 			);
+			//elBar.mouseup();
 		}
 
-		pieprops = {
-			'width': 260,
-			'height': 260,
-			'data': [10,30,60],
-			'dataname': ["T1","T2","T3"],
-			'colours': ['#38D3EE', '#C9D2D4', '#FF5A82']
-		}
-
-		barprops = {
-			
-			'data': {'00:30':15,'01:00':2,'01:30':3,'02:00':4,'02:30':3,'03:00':4,'03:30':5,'04:00':6,'04:30':2,'05:00':3,'05:30':5,'06:00':6,'06:30':2,'07:00':5,'07:30':6,'08:00':9,'08:30':9,'09:00':5, '09:30':1,'10:00':9,'10:30':10, '11:00':1, '11:30':1, '12:00':5, '12:30':1,'13:00':4,'13:30':5,'14:00':6,'14:30':2,'15:00':3,'15:30':5,'16:00':6,'16:30':2,'17:00':5,'17:30':6,'18:00':9,'18:30':9,'19:00':5, '19:30':1, '20:00':5, '20:30':15,'21:00':2,'21:30':3,'22:00':4,'22:30':3,'23:00':4,'23:30':5,'24:00': 12},
-			//'data': {},
-			'xCords': [],
-			'yCords': [],
-			'yCordsSorted': [],
-			'divId': 'undefined',
-			'datumsPerScreen': 12,
-			'colours': {},
-			'barColours': '',
-			'yTickLabels': {},
-			'svgObj': 'undefined',
-			'axisType': 'generateSimpleAxis'
-		};
+		
 
 		window.onload = function()
 		{
-			chart.pie('pie',pieprops);
-			chart.bar('bar',barprops);
 			setTimeout(refreshData, 1000);
 		};
 
 		window.onresize = function()
 		{
-			document.getElementById("bar").innerHTML = "";
-			chart.bar('bar',barprops);
+			var cb = document.getElementById("bar").innerHTML = "";
+			chart.bar('bar',cb.barprops);
 		}
 
 		
@@ -852,9 +955,9 @@
 <body>
 	<div class="content">
 		<div class="header">
-		<div class="header-body">
-			<div class="title-logo">
-				<img height="50" class="figure" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3Ny41OSAxNC42NSI+PGcgZmlsbD0iI2IwMTg0MiI+PHBhdGggZD0iTTM5LjYzIDcuMjNjMC0yLjUtMS44OC00LjUyLTQuNDgtNC41M2gtLjAyYy0yLjYgMC00LjQ2IDIuMTUtNC40NiA0LjY2IDAgMi41IDEuODQgNC40OCA0LjQ2IDQuNDggMiAwIDQuMTctLjkgNC40NS0yLjc0aC0xLjU1Yy0uMzIgMi4xLTQuMDIgMi4wNy00LjE1LjA1LS4wMi0uMzQtLjAyLTEuMjctLjAyLTEuMjdoNS44Yy4wMi0uMTctLjAzLS40Ni0uMDMtLjY1em0tNS43NC0uNVY1LjJzMC0xLjQgMS4yLTEuNGMxIDAgMS4xIDEuNDcgMS4xIDEuNDd2MS41aC0yLjN6TTY5LjkgMGgzLjIzdjExLjQzSDcwem00LjM4IDBoMy4yNHYxMS40M0g3NC4zek0xNS40IDIuN2MtMS42NCAwLTQuNyAxLjE2LTQuNyA0LjYuMDIgMy44IDMuMDYgNC41NCA0LjcgNC41NCAxLjY0IDAgNC43LS45NiA0LjctNC41NS0uMDItMy42LTMuMDYtNC42LTQuNy00LjZ6bTAgOC4wM2MtLjkgMC0xLjIyLTEuMzYtMS4yMi0zLjQzIDAtMi4wOC4xOC0zLjQ3IDEuMjItMy40Ny45OCAwIDEuMTggMS40IDEuMTggMy40NyAwIDIuMDctLjIgMy40My0xLjE4IDMuNDN6TTAgMGgzLjV2NC43aDIuNzJWMGgzLjd2MTEuNDNINi4yVjYuNEgzLjV2NS4wNUgwVjBtMjEuMDggMTEuNDN2LTguNGgzLjJ2LjhzMS4xNS0uOTYgMi41NC0uOTZjMS4zIDAgMi41LjkgMi43NiAxLjkyLjA4LjMuMDYuNi4wNi42djZIMjYuNVY1LjlzLjEyLTEuMjUtLjg0LTEuMmMtLjc2LjA0LTEuMjYuNDQtMS40Ljd2Ni4wNUgyMS4xIi8+PHBhdGggZD0iTTM4Ljg0IDEyLjhjMCAuNzUuNDQgMS44NSAxLjg1IDEuODUgMS4xIDAgMi4yLS42NiAyLjYtMS41N2w0LTEwLjA0IDIuNCA4LjRoMi42M0w1My43IDYuNGwxLjYgNS4xaDIuNUw2MCAzLjFoLTEuNGwtMS4xNiA0LjQtMS41LTQuNGgtMi42bC0xLjMgNC41LTEuMzMtNC41M2gtNC42TDQ0LjUgNy4xbC0xLjU0LTQuMDVoLTMuN3MzLjQyIDcuOCAzLjQgOC40Yy0uMDQgMS4zOC0xLjEgMi0xLjI0IDIuMDVoLjAyYy4xMi0uMTcuMjMtLjUuMjMtLjc4IDAtLjc3LS42Mi0xLjQtMS40LTEuNC0uNzcgMC0xLjQuNjQtMS40IDEuNDhNNjkuMiA3LjIzYzAtMi41LTEuOS00LjUyLTQuNS00LjUzLTIuNiAwLTQuNDYgMi4xNS00LjQ2IDQuNjYgMCAyLjUgMS44NCA0LjQ4IDQuNDYgNC40OCAxLjk4IDAgNC4xNi0uOSA0LjQ0LTIuNzRINjcuNmMtLjMzIDIuMS00LjAzIDIuMDctNC4xNi4wNS0uMDItLjM0LS4wMi0xLjI3LS4wMi0xLjI3aDUuOGMuMDItLjE3LS4wMy0uNDYtLjAzLS42NXptLTUuNzQtLjVsLjA2LTEuNTJzMC0xLjQgMS4yLTEuNGMxLjA0IDAgMS4wNyAxLjUgMS4wNyAxLjV2MS41aC0yLjR6Ii8+PC9nPjwvc3ZnPg=="></img>
+			<div class="header-body">
+				<div class="title-logo">
+					<img class="figure" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3Ny41OSAxNC42NSI+PGcgZmlsbD0iI2IwMTg0MiI+PHBhdGggZD0iTTM5LjYzIDcuMjNjMC0yLjUtMS44OC00LjUyLTQuNDgtNC41M2gtLjAyYy0yLjYgMC00LjQ2IDIuMTUtNC40NiA0LjY2IDAgMi41IDEuODQgNC40OCA0LjQ2IDQuNDggMiAwIDQuMTctLjkgNC40NS0yLjc0aC0xLjU1Yy0uMzIgMi4xLTQuMDIgMi4wNy00LjE1LjA1LS4wMi0uMzQtLjAyLTEuMjctLjAyLTEuMjdoNS44Yy4wMi0uMTctLjAzLS40Ni0uMDMtLjY1em0tNS43NC0uNVY1LjJzMC0xLjQgMS4yLTEuNGMxIDAgMS4xIDEuNDcgMS4xIDEuNDd2MS41aC0yLjN6TTY5LjkgMGgzLjIzdjExLjQzSDcwem00LjM4IDBoMy4yNHYxMS40M0g3NC4zek0xNS40IDIuN2MtMS42NCAwLTQuNyAxLjE2LTQuNyA0LjYuMDIgMy44IDMuMDYgNC41NCA0LjcgNC41NCAxLjY0IDAgNC43LS45NiA0LjctNC41NS0uMDItMy42LTMuMDYtNC42LTQuNy00LjZ6bTAgOC4wM2MtLjkgMC0xLjIyLTEuMzYtMS4yMi0zLjQzIDAtMi4wOC4xOC0zLjQ3IDEuMjItMy40Ny45OCAwIDEuMTggMS40IDEuMTggMy40NyAwIDIuMDctLjIgMy40My0xLjE4IDMuNDN6TTAgMGgzLjV2NC43aDIuNzJWMGgzLjd2MTEuNDNINi4yVjYuNEgzLjV2NS4wNUgwVjBtMjEuMDggMTEuNDN2LTguNGgzLjJ2LjhzMS4xNS0uOTYgMi41NC0uOTZjMS4zIDAgMi41LjkgMi43NiAxLjkyLjA4LjMuMDYuNi4wNi42djZIMjYuNVY1LjlzLjEyLTEuMjUtLjg0LTEuMmMtLjc2LjA0LTEuMjYuNDQtMS40Ljd2Ni4wNUgyMS4xIi8+PHBhdGggZD0iTTM4Ljg0IDEyLjhjMCAuNzUuNDQgMS44NSAxLjg1IDEuODUgMS4xIDAgMi4yLS42NiAyLjYtMS41N2w0LTEwLjA0IDIuNCA4LjRoMi42M0w1My43IDYuNGwxLjYgNS4xaDIuNUw2MCAzLjFoLTEuNGwtMS4xNiA0LjQtMS41LTQuNGgtMi42bC0xLjMgNC41LTEuMzMtNC41M2gtNC42TDQ0LjUgNy4xbC0xLjU0LTQuMDVoLTMuN3MzLjQyIDcuOCAzLjQgOC40Yy0uMDQgMS4zOC0xLjEgMi0xLjI0IDIuMDVoLjAyYy4xMi0uMTcuMjMtLjUuMjMtLjc4IDAtLjc3LS42Mi0xLjQtMS40LTEuNC0uNzcgMC0xLjQuNjQtMS40IDEuNDhNNjkuMiA3LjIzYzAtMi41LTEuOS00LjUyLTQuNS00LjUzLTIuNiAwLTQuNDYgMi4xNS00LjQ2IDQuNjYgMCAyLjUgMS44NCA0LjQ4IDQuNDYgNC40OCAxLjk4IDAgNC4xNi0uOSA0LjQ0LTIuNzRINjcuNmMtLjMzIDIuMS00LjAzIDIuMDctNC4xNi4wNS0uMDItLjM0LS4wMi0xLjI3LS4wMi0xLjI3aDUuOGMuMDItLjE3LS4wMy0uNDYtLjAzLS42NXptLTUuNzQtLjVsLjA2LTEuNTJzMC0xLjQgMS4yLTEuNGMxLjA0IDAgMS4wNyAxLjUgMS4wNyAxLjV2MS41aC0yLjR6Ii8+PC9nPjwvc3ZnPg=="></img>
 				</div>
 				<div class="title">
 					<div class="title-wrapper">
@@ -866,19 +969,20 @@
 		<div class="content-body">
 			<div class="section-row">
 				<div class="section">
-					<h2>Суммарное потребление (кВт•ч)</h2>
+					<h2>Потребление (кВт•ч)</h2>
 					<div class="section-body">
 
-						<div class="subsection">
-							<div id="pie"></div>
+						<div id="pies" class="ss">
+							<div id="pie" class="sss"></div>
 						</div>
 
-						<div class="subsection">
+						<div class="ss">
 							<div class="sss">
-								<strong id="energy1"><pre>Тариф 1: 452452</pre></strong>
-								<strong id="energy2"><pre>Тариф 2: 10</pre></strong>
-								<strong id="energy3"><pre>Тариф 3: 10</pre></strong>
-								<strong id="energy_total"><pre>Сумма:   452472</pre></strong>
+								<strong id="energy1"></strong>
+								<strong id="energy2"></strong>
+								<strong id="energy3"></strong>
+								<strong id="energy4"></strong>
+								<strong id="energy_total"></strong>
 							</div>
 						</div>
 
@@ -890,14 +994,14 @@
 				<div class="section">
 					<h2>Мощность (Ватт)</h2>
 					<div class="section-body">
-						<strong id="power">0</strong>
+						<strong id="power"></strong>
 					</div>
 				</div>
 
 				<div class="section">
 					<h2>Напряжение (Вольт)</h2>
 					<div class="section-body">
-						<strong id="voltage">0</strong>
+						<strong id="voltage"></strong>
 					</div>
 				</div>
 
@@ -906,13 +1010,17 @@
 			<div class="section-row">
 				<div class="section">
 					<h2>График потребления</h2>
-					<div id="bar" class="section-body"></div>
+					<div class="barcht">
+						<strong id="tdata"></strong>
+					</div>
+					<div class="section-body">
+						<div id="bar" class="barch"></div>
+					</div>
 				</div>
 			</div>
 
 		</div>
-		<div class="footer"></div>		
-		</div>
+		<div class="footer"></div>	
 	</div>
 </body>
 </html>
