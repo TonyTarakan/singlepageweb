@@ -474,8 +474,6 @@
 						.addAttribute('d', yPath)
 						.addAttribute('stroke-width', '1')
 						.addAttribute('stroke', color)
-						//.addAttribute('fill', 'none')
-						//.addAttribute('filter', 'url(#shadowfilter)')
 						.toDomString();
 				this.props.svg.appendChild(pathObj);
 				if(text) {
@@ -484,16 +482,16 @@
 												.addAttribute('y', this.props.OY-level-5)
 												.addAttribute('class', 'barch')
 												.toDomString();
-												titlet.textContent = this.props.yAxPos + ' кВт•ч';
+												titlet.textContent = this.props.yAxPos + ' Вт';
 					this.props.svg.appendChild(titlet);
 				}
 			},
 			calculateAxis: function (width, height) {
 				
 				var startX = this.props.SX = 0.05*width;
-				var startY = this.props.SY = 0;
+				var startY = this.props.SY = 0.07*height;
 				this.props.OX = startX;
-				var oY = this.props.OY = height - 0.1 * height;
+				var oY = this.props.OY = height - 0.1*height;
 				var endX = this.props.EX = width - startX;
 				this.props.EY = oY;
 				this.props.LOX = endX - startX;
@@ -501,18 +499,13 @@
 				var ycords = this.props.yCords;
 				var length = ycords.length;
 				var range = elStats.calcRangeOnNonSortedData(ycords);
-				var max = ycords[length - 1];
-				this.props.yAxPos = Math.ceil(max);
+				var max = Math.ceil(ycords[length - 1]);
+				this.props.yAxPos = max;
 				//console.log(max, range);
-				var scaleF = 0;
-				if (max % range === 0)
-					scaleF = (max / range);
-				else
-					scaleF = (max / range) + 1;
-				var a_diff = (oY - startY) / (scaleF+1);
-
+				var a_diff = (oY - startY) / (max / range);
+				//console.log("a_diff",a_diff);
 				this.props.aDiff = a_diff/range;
-				//console.log("adif",this.props.aDiff);
+				//console.log("this.props.aDiff",this.props.aDiff);
 			},
 			generateSimpleAxis: function (svgObj, xcords, ycords, yticks, xdataR, height, width) {
 				width = document.getElementById("bar").clientWidth;
@@ -688,7 +681,7 @@
 											.addAttribute('x', x)
 											.addAttribute('y', barPosition)
 											.addAttribute('position', 'relative')
-											.addText(this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' кВт•ч')
+											.addText(this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' Вт')
 											.addAttribute('class','tooltip')
 											.addAttribute('font-family','Arial')
 											.addAttribute('font-size',20)
@@ -697,7 +690,7 @@
 
 					
 					var title = fnSvgElement.createNewElement('title').toDomString();
-					title.textContent = this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' кВт•ч';
+					title.textContent = this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' Вт';
 					bar.appendChild(title);
 
 			 		//group.appendChild(titlet);
@@ -742,7 +735,7 @@
 
 
 					xCords.push("с " + hours1 + ":" + (minutes1>0 ? minutes1 : "00") + " по " + hours + ":" + (minutes>0 ? minutes : "00"));
-					yCords.push(data[i]);
+					yCords.push(data[i]*2);
 
 					
 				}
@@ -1009,13 +1002,13 @@
 
 			<div class="section-row">
 				<div class="section">
-					<h2>График потребления</h2>
+					<h2>График средней мощности</h2>
 					<div class="barcht">
 						<strong id="tdata"></strong>
 					</div>
-					<div class="section-body">
+					
 						<div id="bar" class="barch"></div>
-					</div>
+					
 				</div>
 			</div>
 
