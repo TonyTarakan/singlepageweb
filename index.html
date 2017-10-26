@@ -161,11 +161,6 @@
 		display: flex;
 		justify-content:center;
 	}
-	.chartBar:hover
-	{
-		opacity:0.7;
-		box-shadow:0 2px 20px 0 rgba(0,0,0,0.3),0 1px 5px 0 rgba(0,0,0,0.3),0 3px 1px -2px rgba(0,0,0,0.3)
-	}
 	.barch
 	{
 		width:100%;
@@ -643,8 +638,11 @@
 				td.textContent = t.firstChild.textContent;
 				t.style.fill = '#F2635F';
 				try {
-					if(this.props.prevBar != t) 
+					if(this.props.prevBar != t) {
 						this.props.prevBar.style.fill = 'steelblue';
+						console.log('new style');
+					}
+
 				}
 				catch (e) {}
 				this.props.prevBar = t;
@@ -775,41 +773,36 @@
 
 		function get_data(success, success1, error, timeout) {
 			
+			/*var xmlhttp = new XMLHttpRequest();
 			var rs = '/api/v1/';
 
-			if(!needBar) {
-				var xmlhttp = new XMLHttpRequest();
+			xmlhttp.open('GET', rs+"get", true);
 
-				xmlhttp.open('GET', rs+"get", true);
+			xmlhttp.timeout = timeout || 2000;
 
-				xmlhttp.timeout = timeout || 2000;
-
-				xmlhttp.onreadystatechange = function() {
-					if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-						if(xmlhttp.status == 200) {
-							try {
-								success(JSON.parse(xmlhttp.responseText));
-							}
-							catch (E) {
-								error("Fail to parse json get");
-								console.log("Fail to parse json get");
-							}
+			xmlhttp.onreadystatechange = function() {
+				if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+					if(xmlhttp.status == 200) {
+						try {*/
+							success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
+							success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));
+			/*			}
+						catch (E) {
+							error("Fail to parse json");
 						}
-						else {
-							error(xmlhttp.responseText);
-							console.log("xmlhttp", xmlhttp.responseText);
-						}
-
 					}
-				};
-			
-				xmlhttp.send(null);
-			}
+					else {
+						error(xmlhttp.responseText);
+					}
 
+				}
+			};
 			
-			else {
+			xmlhttp.send(null);
 
-				var xmlhttp1 = new XMLHttpRequest();
+			var xmlhttp1 = new XMLHttpRequest();
+
+			if(needBar) {
 
 				xmlhttp1.open('GET', rs+"lp", true);
 
@@ -823,20 +816,18 @@
 								needBar = false;
 							}
 							catch (E) {
-								error("Fail to parse json lp");
-								console.log("Fail to parse json lp");
+								error("Fail to parse json");
 							}
 						}
 						else {
 							error(xmlhttp1.responseText);
-							console.log("xmlhttp1", xmlhttp1.responseText);
 						}
 
 					}
 				};
 
 				xmlhttp1.send(null);		
-			}
+			}*/
 		}
 
 		function refreshData()
@@ -899,7 +890,7 @@
 					document.getElementById("power").innerHTML	= data.P.toFixed(1).toString();
 					document.getElementById("voltage").innerHTML  = data.U.toFixed(1).toString();
 
-					setTimeout(refreshData, 1000);
+					setTimeout(refreshData, 2000);
 					
 				},
 				function(data) {
@@ -908,7 +899,7 @@
 					document.getElementById("bar").innerHTML = "";
 					chart.bar('bar', barprops);
 
-					setTimeout(refreshData, 1000);
+					setTimeout(refreshData, 2000);
 				},
 				function(error) {
 					if (error_counter > 3)
@@ -932,7 +923,7 @@
 					
 					setTimeout(refreshData, 3000);
 				},
-				1000
+				2000
 			);
 			//elBar.mouseup();
 		}
@@ -941,7 +932,7 @@
 
 		window.onload = function()
 		{
-			setTimeout(refreshData, 1000);
+			setTimeout(refreshData, 2000);
 		};
 
 		window.onresize = function()
