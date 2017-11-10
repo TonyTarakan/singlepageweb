@@ -639,13 +639,18 @@
 				t.style.fill = '#F2635F';
 				try {
 					if(this.props.prevBar != t) {
-						this.props.prevBar.style.fill = 'steelblue';
+						//this.props.prevBar.style.fill = 'steelblue';
+						this.props.prevBar.setAttribute("style", "fill:steelblue;");
 						console.log('new style');
 					}
 
 				}
-				catch (e) {}
+				catch (e) {console.log("2!");}
+				
 				this.props.prevBar = t;
+				// UBERACHTUNG!!!! суперкостыль
+				document.getElementById("bar").innerHTML = "";
+				chart.bar('bar', barprops);
 			},
 			generateBars : function(start,end) {
 				var LOX = this.props.aProps.LOX;
@@ -751,9 +756,10 @@
 				this.props.end=this.props.datumsPerScreen;
 				this.props.svgObj.addEventListener('mousemove',this.dragSvg.bind(this));
 				this.props.svgObj.addEventListener('mousedown',this.mousedown.bind(this));
-
-				this.props.svgObj.addEventListener('touchmove',this.dragSvg.bind(this));
-				this.props.svgObj.addEventListener('touchstart',this.mousedown.bind(this));
+				if ('ontouchstart' in window) {
+					this.props.svgObj.addEventListener('touchmove',this.dragSvg.bind(this));
+					this.props.svgObj.addEventListener('touchstart',this.mousedown.bind(this));
+				}
 			}
 		}; 
 
@@ -773,36 +779,42 @@
 
 		function get_data(success, success1, error, timeout) {
 			
-			/*var xmlhttp = new XMLHttpRequest();
-			var rs = '/api/v1/';
+			if(!needBar) {
+				/*var xmlhttp = new XMLHttpRequest();
 
-			xmlhttp.open('GET', rs+"get", true);
+				xmlhttp.open('GET', rs+"get", true);
 
-			xmlhttp.timeout = timeout || 2000;
+				xmlhttp.timeout = timeout || 2000;
 
-			xmlhttp.onreadystatechange = function() {
-				if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-					if(xmlhttp.status == 200) {
-						try {*/
-							success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
-							success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));
-			/*			}
-						catch (E) {
-							error("Fail to parse json");
+				xmlhttp.onreadystatechange = function() {
+					if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+						if(xmlhttp.status == 200) {
+							try {
+								success(JSON.parse(xmlhttp.responseText));*/
+								success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
+
+								/*
+							}
+							catch (E) {
+								error("Fail to parse json get");
+								console.log("Fail to parse json get");
+							}
 						}
-					}
-					else {
-						error(xmlhttp.responseText);
-					}
+						else {
+							error(xmlhttp.responseText);
+							console.log("xmlhttp", xmlhttp.responseText);
+						}
 
-				}
-			};
+					}
+				};
 			
-			xmlhttp.send(null);
+				xmlhttp.send(null);*/
+			}
 
-			var xmlhttp1 = new XMLHttpRequest();
+			
+			else {
 
-			if(needBar) {
+				/*var xmlhttp1 = new XMLHttpRequest();
 
 				xmlhttp1.open('GET', rs+"lp", true);
 
@@ -813,21 +825,26 @@
 						if(xmlhttp1.status == 200) {
 							try {
 								success1(JSON.parse(xmlhttp1.responseText));
+								needBar = false;*/
+								success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));
 								needBar = false;
+								/*
 							}
 							catch (E) {
-								error("Fail to parse json");
+								error("Fail to parse json lp");
+								console.log("Fail to parse json lp");
 							}
 						}
 						else {
 							error(xmlhttp1.responseText);
+							console.log("xmlhttp1", xmlhttp1.responseText);
 						}
 
 					}
 				};
 
-				xmlhttp1.send(null);		
-			}*/
+				xmlhttp1.send(null);*/		
+			}
 		}
 
 		function refreshData()
@@ -881,7 +898,7 @@
 					{	try {
 							el = document.getElementById("pies");
 							el.parentNode.removeChild(el);
-						} catch (e) {}
+						} catch (e) { console.log("1!"); }
 						document.getElementById("energy_total").innerHTML = T1.toString();
 					}
 
