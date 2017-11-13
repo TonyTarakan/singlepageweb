@@ -135,7 +135,12 @@
 		justify-content:center;
 		flex-direction:column;
 		text-align:left;
-		line-height: 0;
+	}
+	.ssss
+	{
+		font-weight: bold;
+		white-space: nowrap;
+		
 	}
 	.section h2
 	{
@@ -886,12 +891,12 @@
 						var sum = 0;
 						for (var i = 0; i < pp.data.length; i++) {
 							sum += pp.data[i];
-							document.getElementById("energy" + (i+1).toString()).innerHTML  = "<pre><span style='color:"+pp.colours[i]+"'>■</span> Тариф "+(i+1).toString()+": {0}</pre>".format(pp.data[i].toFixed(1).toString());
+							document.getElementById("energy" + (i+1).toString()).innerHTML  = " {0}".format(pp.data[i].toFixed(1).toString());
 						}
 
 						document.getElementById("pie").innerHTML = "";
 						chart.pie('pie', pp);
-						document.getElementById("energy_total").innerHTML  = "<br><pre>Сумма:     {0}</pre>".format(sum.toFixed(1).toString());
+						document.getElementById("energy_total").innerHTML  = "{0}".format(sum.toFixed(1).toString());
 
 					}
 					else
@@ -989,11 +994,73 @@
 
 						<div class="ss">
 							<div class="sss">
-								<strong id="energy1"></strong>
-								<strong id="energy2"></strong>
-								<strong id="energy3"></strong>
-								<strong id="energy4"></strong>
-								<strong id="energy_total"></strong>
+								<table class="ssss">
+							        <tr>
+							            <td style='min-width:130px;'>
+							                <span style='color:#ff8678'>■</span> Тариф 1:
+							            </td>
+							            <td>
+							                <element id="energy1"></strong>
+							            </td>
+							        </tr>
+							        <tr>
+							            <td>
+							                <span style='color:#ffbf00'>■</span> Тариф 2:
+							            </td>
+							            <td>
+							                <element id="energy2"></element>
+							            </td>
+							        </tr>
+							        <tr>
+							            <td>
+							                <span style='color:#4ec7ff'>■</span> Тариф 3:
+							            </td>
+							            <td>
+							                <element id="energy3"></element>
+							            </td>
+							        </tr>
+							        <tr>
+							            <td>
+							                <span style='color:#6ee7ff'>■</span> Тариф 4:
+							            </td>
+							            <td>
+							                <element id="energy4"></element>
+							            </td>
+							        </tr>
+							        <tr style='height:50px'>
+							            <td>
+							                Сумма:
+							            </td>
+							            <td>
+							                <element id="energy_total"></element>
+							            </td>
+							        </tr>
+							        
+							    </table>
+
+<!--
+
+								<div class="ssss">
+									<div></div>
+									
+								</div>
+								<div class="ssss">
+									<div><span style='color:#ffbf00'>■</span> Тариф 2:</div>
+									<strong id="energy2"></strong>
+								</div>
+								<div class="ssss">
+									<div><span style='color:#4ec7ff'>■</span> Тариф 3:</div>
+									<strong id="energy3"></strong>
+								</div>
+								<div class="ssss">
+									<div><span style='color:#6ee7ff'>■</span> Тариф 4:</div>
+									<strong id="energy4"></strong>
+								</div>
+								<div class="ssss">
+									<div>Сумма:</div>
+									<strong id="energy_total"></strong>
+								</div>
+-->
 							</div>
 						</div>
 
