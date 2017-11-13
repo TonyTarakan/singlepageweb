@@ -654,11 +654,13 @@
 					if(this.props.prevBar != t) {
 						//this.props.prevBar.style.fill = 'steelblue';
 						this.props.prevBar.setAttribute("style", "fill:steelblue;");
-						console.log('new style');
+						//console.log('new style');
 					}
 
 				}
-				catch (e) {console.log("2!");}
+				catch (e) {
+					//console.log("2!");
+				}
 				
 				this.props.prevBar = t;
 				// UBERACHTUNG!!!! суперкостыль
@@ -910,7 +912,9 @@
 					{	try {
 							el = document.getElementById("pies");
 							el.parentNode.removeChild(el);
-						} catch (e) { console.log("1!"); }
+						} catch (e) {
+							//console.log("1!");
+						}
 						document.getElementById("envt").innerHTML = T1.toString();
 					}
 					
