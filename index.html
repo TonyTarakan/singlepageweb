@@ -793,7 +793,7 @@
 		function get_data(success, success1, error, timeout) {
 			
 			if(!needBar) {
-				/*var xmlhttp = new XMLHttpRequest();
+				var xmlhttp = new XMLHttpRequest();
 
 				xmlhttp.open('GET', rs+"get", true);
 
@@ -803,10 +803,8 @@
 					if (xmlhttp.readyState == XMLHttpRequest.DONE) {
 						if(xmlhttp.status == 200) {
 							try {
-								success(JSON.parse(xmlhttp.responseText));*/
-								success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
-
-								/*
+								success(JSON.parse(xmlhttp.responseText));
+								/*success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));*/
 							}
 							catch (E) {
 								error("Fail to parse json get");
@@ -821,13 +819,12 @@
 					}
 				};
 			
-				xmlhttp.send(null);*/
+				xmlhttp.send(null);
 			}
 
 			
 			else {
-
-				/*var xmlhttp1 = new XMLHttpRequest();
+				var xmlhttp1 = new XMLHttpRequest();
 
 				xmlhttp1.open('GET', rs+"lp", true);
 
@@ -838,10 +835,9 @@
 						if(xmlhttp1.status == 200) {
 							try {
 								success1(JSON.parse(xmlhttp1.responseText));
-								needBar = false;*/
-								success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));
 								needBar = false;
-								/*
+								/*success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));
+								needBar = false;*/
 							}
 							catch (E) {
 								error("Fail to parse json lp");
@@ -856,7 +852,7 @@
 					}
 				};
 
-				xmlhttp1.send(null);*/		
+				xmlhttp1.send(null);		
 			}
 		}
 
