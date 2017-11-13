@@ -126,8 +126,8 @@
 		display:flex;
 		flex-direction:row;
 		justify-content:center;
-		margin-left:1rem;
-		margin-right:1rem
+		margin-left:0.5rem;
+		margin-right:0.5rem
 	}
 	.sss
 	{
@@ -135,12 +135,12 @@
 		justify-content:center;
 		flex-direction:column;
 		text-align:left;
+		font-weight: bold;
+		white-space: nowrap;
 	}
 	.ssss
 	{
-		font-weight: bold;
-		white-space: nowrap;
-		
+		min-width:140px
 	}
 	.section h2
 	{
@@ -228,6 +228,14 @@
 		{
 			height:300px;
 			font-size:1rem
+		}
+		.sss
+		{
+			font-size:1.2rem
+		}
+			.ssss
+		{
+			min-width:105px
 		}
 	}
 	</style>
@@ -885,18 +893,17 @@
 
 					if(pp.data.length > 1)
 					{
-						
-						
-
 						var sum = 0;
 						for (var i = 0; i < pp.data.length; i++) {
 							sum += pp.data[i];
-							document.getElementById("energy" + (i+1).toString()).innerHTML  = " {0}".format(pp.data[i].toFixed(1).toString());
+							document.getElementById("en" + (i+1).toString()).innerHTML  = "<span style='color:"+pp.colours[i]+"'>■</span> Тариф "+(i+1).toString()+":";
+							document.getElementById("env" + (i+1).toString()).innerHTML  = "{0}".format(pp.data[i].toFixed(1).toString());
 						}
 
 						document.getElementById("pie").innerHTML = "";
 						chart.pie('pie', pp);
-						document.getElementById("energy_total").innerHTML  = "{0}".format(sum.toFixed(1).toString());
+						document.getElementById("et").innerHTML  = "Сумма:";
+						document.getElementById("envt").innerHTML  = "{0}".format(sum.toFixed(1).toString());
 
 					}
 					else
@@ -904,10 +911,8 @@
 							el = document.getElementById("pies");
 							el.parentNode.removeChild(el);
 						} catch (e) { console.log("1!"); }
-						document.getElementById("energy_total").innerHTML = T1.toString();
+						document.getElementById("envt").innerHTML = T1.toString();
 					}
-
-
 					
 					document.getElementById("power").innerHTML	= data.P.toFixed(1).toString();
 					document.getElementById("voltage").innerHTML  = data.U.toFixed(1).toString();
@@ -927,11 +932,16 @@
 					if (error_counter > 3)
 					{
 						document.getElementById("title").innerHTML="AS100 (Нет cвязи)"; 
-						document.getElementById("energy_total").innerHTML  = "";
-						document.getElementById("energy1").innerHTML  = "";
-						document.getElementById("energy2").innerHTML  = "";
-						document.getElementById("energy3").innerHTML  = "";
-						document.getElementById("energy4").innerHTML  = "";
+						document.getElementById("envt").innerHTML  = "";
+						document.getElementById("env1").innerHTML  = "";
+						document.getElementById("env2").innerHTML  = "";
+						document.getElementById("env3").innerHTML  = "";
+						document.getElementById("env4").innerHTML  = "";
+						document.getElementById("ent").innerHTML  = "";
+						document.getElementById("en1").innerHTML  = "";
+						document.getElementById("en2").innerHTML  = "";
+						document.getElementById("en3").innerHTML  = "";
+						document.getElementById("en4").innerHTML  = "";
 						document.getElementById("pie").innerHTML  = "";
 						document.getElementById("tdata").innerHTML  = "";
 						document.getElementById("bar").innerHTML  = "";
@@ -993,75 +1003,48 @@
 						</div>
 
 						<div class="ss">
-							<div class="sss">
-								<table class="ssss">
-							        <tr>
-							            <td style='min-width:130px;'>
-							                <span style='color:#ff8678'>■</span> Тариф 1:
-							            </td>
-							            <td>
-							                <element id="energy1"></strong>
-							            </td>
-							        </tr>
-							        <tr>
-							            <td>
-							                <span style='color:#ffbf00'>■</span> Тариф 2:
-							            </td>
-							            <td>
-							                <element id="energy2"></element>
-							            </td>
-							        </tr>
-							        <tr>
-							            <td>
-							                <span style='color:#4ec7ff'>■</span> Тариф 3:
-							            </td>
-							            <td>
-							                <element id="energy3"></element>
-							            </td>
-							        </tr>
-							        <tr>
-							            <td>
-							                <span style='color:#6ee7ff'>■</span> Тариф 4:
-							            </td>
-							            <td>
-							                <element id="energy4"></element>
-							            </td>
-							        </tr>
-							        <tr style='height:50px'>
-							            <td>
-							                Сумма:
-							            </td>
-							            <td>
-							                <element id="energy_total"></element>
-							            </td>
-							        </tr>
-							        
-							    </table>
-
-<!--
-
-								<div class="ssss">
-									<div></div>
-									
-								</div>
-								<div class="ssss">
-									<div><span style='color:#ffbf00'>■</span> Тариф 2:</div>
-									<strong id="energy2"></strong>
-								</div>
-								<div class="ssss">
-									<div><span style='color:#4ec7ff'>■</span> Тариф 3:</div>
-									<strong id="energy3"></strong>
-								</div>
-								<div class="ssss">
-									<div><span style='color:#6ee7ff'>■</span> Тариф 4:</div>
-									<strong id="energy4"></strong>
-								</div>
-								<div class="ssss">
-									<div>Сумма:</div>
-									<strong id="energy_total"></strong>
-								</div>
--->
-							</div>
+							<table class="sss">
+								<tr>
+									<td class="ssss">
+										<element id="en1"></element>
+									</td>
+									<td>
+										<element id="env1"></element>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<element id="en2"></element>
+									</td>
+									<td>
+										<element id="env2"></element>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<element id="en3"></element>
+									</td>
+									<td>
+										<element id="env3"></element>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<element id="en4"></element>
+									</td>
+									<td>
+										<element id="env4"></element>
+									</td>
+								</tr>
+								<tr style='height:50px'>
+									<td>
+										<element id="et"></element>
+									</td>
+									<td>
+										<element id="envt"></element>
+									</td>
+								</tr>  
+							</table>
 						</div>
 
 					</div>
@@ -1091,9 +1074,7 @@
 					<div class="barcht">
 						<strong id="tdata"></strong>
 					</div>
-					
 						<div id="bar" class="barch"></div>
-					
 				</div>
 			</div>
 
