@@ -819,6 +819,7 @@
 
 		function get_data(success, success1, error, timeout) {
 			var rs = '/api/v1/';
+			var sel = 'get';
 			if(!needBar) {
 				var xmlhttp = new XMLHttpRequest();
 				
@@ -827,14 +828,17 @@
 					case '1':
 						break;
 					case '2':
+						sel = sel + '?30d';
 						break;
 					case '3':
+						sel = sel + '?7d';
 						break;
 					case '4':
+						sel = sel + '?24h';
 						break;
 				}
 
-				xmlhttp.open('GET', rs+"get", true);
+				xmlhttp.open('GET', rs+sel, true);
 
 				xmlhttp.timeout = timeout || 2000;
 
