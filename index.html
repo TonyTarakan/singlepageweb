@@ -121,6 +121,25 @@
 		justify-content:center;
 		width:100%
 	}
+	.styled-select select 
+	{
+		outline: none;
+		background: #fff;
+		border:1px solid #00a5cd;
+		font-size: 18px;
+		padding-left: 10px;
+		height: 36px;
+		width: 250px;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+		color:#00a5cd;
+	}
+	.s
+	{
+		margin: 1rem;
+		width:270px
+	}
 	.ss
 	{
 		display:flex;
@@ -507,6 +526,11 @@
 				var ycords = this.props.yCords;
 				var length = ycords.length;
 				var range = elStats.calcRangeOnNonSortedData(ycords);
+				if(range == 0) {
+					this.props.yAxPos = 0;
+					this.props.aDiff = 0;
+					return;
+				}
 				var max = Math.ceil(ycords[length - 1]);
 				this.props.yAxPos = max;
 				//console.log(max, range);
@@ -613,8 +637,9 @@
 					if(this.props.prevPos!=0) {
 
 						var diff = (presentPos-this.props.prevPos);
-						//console.log(diff);
-						if(diff<-6&&this.props.start+this.props.datumsPerScreen<this.props.length) {
+						var thres = this.props.aProps.LOX/this.props.datumsPerScreen;
+						//console.log(thres);
+						if(diff<-thres && this.props.start+this.props.datumsPerScreen < this.props.length) {
 							this.props.start = this.props.start+1;
 							this.props.end = this.props.end+1;
 							this.props.svgObj.removeChild(this.props.groupBar);
@@ -622,7 +647,7 @@
 							//console.log("GenBars(<-):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
 							this.props.prevPos = presentPos;
 						}
-						if(diff>6&&this.props.start>0) {
+						if(diff>thres && this.props.start > 0) {
 							this.props.start= this.props.start-1;
 							this.props.end = this.props.end-1;
 							this.props.svgObj.removeChild(this.props.groupBar);
@@ -679,13 +704,10 @@
 				var y = oY;
 				var group = fnSvgElement.createNewElement('g')
 							.addAttribute('class','bargroup')
-							.addAttribute('onmousedown','return false;')
-							.addAttribute('ondragstart','return false;')
-							.addAttribute('ondrop','return false;')
 							.toDomString();
 
 				for(var i=start;i<=end;i++) {
-					var barHeight = ((parseInt(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
+					var barHeight = ((parseFloat(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
 					barPosition = oY-barHeight;
 					var bar = set.bar(x,barPosition,'b'+i,barWidth,barHeight,'chartBar');
 
@@ -714,6 +736,9 @@
 			 		//group.appendChild(titlet);
 
 					bar.addEventListener('mousedown', this.ttShow.bind(this));
+					if ('ontouchstart' in window) {
+						bar.addEventListener('touchstart', this.ttShow.bind(this));
+					}
 					//"var tt = document.getElementById(\"tt"+i+"\"); tt.style.x = event.screenX; tt.style.y = event.screenY;tt.style.visibility='visible';"); // this.firstChild.style.visibility='visible'
 
 
@@ -796,6 +821,18 @@
 			var rs = '/api/v1/';
 			if(!needBar) {
 				var xmlhttp = new XMLHttpRequest();
+				
+				switch(document.getElementById('interv').value)
+				{
+					case '1':
+						break;
+					case '2':
+						break;
+					case '3':
+						break;
+					case '4':
+						break;
+				}
 
 				xmlhttp.open('GET', rs+"get", true);
 
@@ -899,7 +936,10 @@
 						}
 
 						document.getElementById("pie").innerHTML = "";
-						chart.pie('pie', pp);
+						if(sum != 0)
+						{
+							chart.pie('pie', pp);
+						}
 						document.getElementById("et").innerHTML  = "Сумма:";
 						document.getElementById("envt").innerHTML  = "{0}".format(sum.toFixed(1).toString());
 
@@ -1047,6 +1087,18 @@
 							</table>
 						</div>
 
+					</div>
+					<div class="ss">
+					<div class="s">
+						<div class="styled-select blue semi-square">
+							<select id="interv" onchange="refreshData()"> <!-- onchange or other?? -->
+								<option value="1">За всё время</option>
+								<option value="2">За 30 дней</option>
+								<option value="3">За 7 дней</option>
+								<option value="4">За 24 часа</option>
+							</select>
+						</div>
+					</div>
 					</div>
 				</div>
 			</div>
