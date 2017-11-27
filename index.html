@@ -632,8 +632,9 @@
 					if(this.props.prevPos!=0) {
 
 						var diff = (presentPos-this.props.prevPos);
-						//console.log(diff);
-						if(diff<-6&&this.props.start+this.props.datumsPerScreen<this.props.length) {
+						var thres = this.props.aProps.LOX/this.props.datumsPerScreen;
+						//console.log(thres);
+						if(diff<-thres && this.props.start+this.props.datumsPerScreen < this.props.length) {
 							this.props.start = this.props.start+1;
 							this.props.end = this.props.end+1;
 							this.props.svgObj.removeChild(this.props.groupBar);
@@ -641,7 +642,7 @@
 							//console.log("GenBars(<-):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
 							this.props.prevPos = presentPos;
 						}
-						if(diff>6&&this.props.start>0) {
+						if(diff>thres && this.props.start > 0) {
 							this.props.start= this.props.start-1;
 							this.props.end = this.props.end-1;
 							this.props.svgObj.removeChild(this.props.groupBar);
@@ -698,9 +699,6 @@
 				var y = oY;
 				var group = fnSvgElement.createNewElement('g')
 							.addAttribute('class','bargroup')
-							.addAttribute('onmousedown','return false;')
-							.addAttribute('ondragstart','return false;')
-							.addAttribute('ondrop','return false;')
 							.toDomString();
 
 				for(var i=start;i<=end;i++) {
@@ -733,6 +731,9 @@
 			 		//group.appendChild(titlet);
 
 					bar.addEventListener('mousedown', this.ttShow.bind(this));
+					if ('ontouchstart' in window) {
+						bar.addEventListener('touchstart', this.ttShow.bind(this));
+					}
 					//"var tt = document.getElementById(\"tt"+i+"\"); tt.style.x = event.screenX; tt.style.y = event.screenY;tt.style.visibility='visible';"); // this.firstChild.style.visibility='visible'
 
 
