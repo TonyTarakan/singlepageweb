@@ -110,8 +110,11 @@
 	}
 	.section-body
 	{
-		margin-top:1rem;
-		margin-bottom:1rem;
+		/*border-top:1px solid #f5f5f5;*/
+		border-top:1px solid #C0C0C0;
+		margin-top:-0.05rem;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
 		font-size:1.4rem;
 		flex:1;
 		background-color:#fff;
@@ -135,10 +138,27 @@
 		border-radius: 5px;
 		color:#00a5cd;
 	}
-	.s
+	.dates input,button
 	{
-		margin: 1rem;
-		width:270px
+		margin: 0.25rem;
+		outline: none;
+		background: #fff;
+		border:1px solid #00a5cd;
+		font-size: 16px;
+		padding-left: 10px;
+		padding-right: 10px;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+		color:#00a5cd;
+	}
+	.dates button {
+		padding: 10px;
+		width: 100px;
+		text-align:center;
+	}
+	.dates button:active {
+    	box-shadow:0 2px 20px 0 rgba(0,0,0,0.3),0 1px 5px 0 rgba(0,0,0,0.3),0 3px 1px -2px rgba(0,0,0,0.3)
 	}
 	.ss
 	{
@@ -154,7 +174,6 @@
 		justify-content:center;
 		flex-direction:column;
 		text-align:left;
-		font-weight: bold;
 		white-space: nowrap;
 	}
 	.ssss
@@ -167,7 +186,7 @@
 		padding-bottom:.5rem;
 		color:#00a5cd;
 		font-weight:400;
-		border-bottom:1px solid #f5f5f5
+		/*border-bottom:1px solid #f5f5f5*/
 	}
 	.conic:hover
 	{
@@ -194,9 +213,54 @@
 	}
 	.barcht
 	{
-		margin-top: 0.4rem;
+		border-top: 1px solid #C0C0C0;
+		padding-top: 0.4rem;
 		font-size:1.4rem
 	}
+
+
+
+.tabs>input { display:none; }
+.tabs>div {
+	display:none;
+	cursor: pointer;
+	/*visibility: hidden;*/
+}
+.tabs>label {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    text-align: center;
+    color: #666666;
+    border: 1px solid #C0C0C0;
+    /*border-bottom: none;*/
+    background: #E0E0E0;
+    cursor: pointer;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display:inline-block;
+	width:48%
+}
+.tabs>input:checked + label {
+    color: #000000;
+    border-bottom: 1px solid #fff;
+    background: #FFFFFF;
+    /*box-shadow:-2px -2px 6px 0 rgba(0,0,0,0.3),2px -2px 6px 0 rgba(0,0,0,0.3);*/
+}
+#tab_1:checked ~ #txt_1,
+#tab_2:checked ~ #txt_2{ display: flex; }
+
+
+
+
+
+
+
+
+
+
+
+
+
 	@media only screen and (max-width: 600px)
 	{
 		.section-row
@@ -217,8 +281,8 @@
 		.section-body
 		{
 			font-size: 1.4rem;
-			margin-top: 0.2rem;
-			margin-bottom:0.2rem;
+			padding-top:0.4rem;
+			padding-bottom:0.4rem;
 			flex-direction:column;
 			flex-wrap:nowrap;
 			width:100%
@@ -257,6 +321,12 @@
 			min-width:105px
 		}
 	}
+
+
+
+
+
+
 	</style>
 
 	<title>AS100</title>
@@ -496,6 +566,20 @@
 				'baseUnit' : 0
 			},
 			generateAxis: function (level, color, text) {
+
+
+				var xPath = pathG.move(this.props.SX + this.props.LOX/2, this.props.SY) + ' ' + pathG.lineTo(this.props.SX + this.props.LOX/2, this.props.OY);
+	        pathObj = fnSvgElement.createNewElement('path')
+	                .addAttribute('d', xPath)
+	                .addAttribute('stroke-width', '1')
+	                .addAttribute('class', 'xAxis')
+	                .addAttribute('stroke', 'black')
+	                .addAttribute('fill', 'none')
+	                .toDomString();
+	        this.props.svg.appendChild(pathObj);
+
+
+
 				var yPath = pathG.move(this.props.OX, this.props.OY-level) + ' ' + pathG.lineTo(this.props.EX, this.props.EY-level);
 				pathObj = fnSvgElement.createNewElement('path')
 						.addAttribute('d', yPath)
@@ -590,11 +674,11 @@
 			'xCords': [],
 			'yCords': [],
 			'yCordsSorted': [],
-			'datumsPerScreen': 12,
+			'datumsPerScreen': 11,
 			'colours': {},
 			'barColours': '',
 			'yTickLabels': {},
-			'start': 36, // hardcoded draw area (48-datumsPerScreen)
+			'start': 42, // hardcoded draw area (48-datumsPerScreen)
 			'svgObj': 'undefined',
 			'axisType': 'generateSimpleAxis'
 		};
@@ -639,7 +723,7 @@
 						var diff = (presentPos-this.props.prevPos);
 						var thres = this.props.aProps.LOX/this.props.datumsPerScreen;
 						//console.log(thres);
-						if(diff<-thres && this.props.start+this.props.datumsPerScreen < this.props.length) {
+						if(diff<-thres && this.props.start+this.props.datumsPerScreen/2+1 < this.props.length) {
 							this.props.start = this.props.start+1;
 							this.props.end = this.props.end+1;
 							this.props.svgObj.removeChild(this.props.groupBar);
@@ -647,7 +731,7 @@
 							//console.log("GenBars(<-):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
 							this.props.prevPos = presentPos;
 						}
-						if(diff>thres && this.props.start > 0) {
+						if(diff>thres && this.props.start > -this.props.datumsPerScreen/2+1) {
 							this.props.start= this.props.start-1;
 							this.props.end = this.props.end-1;
 							this.props.svgObj.removeChild(this.props.groupBar);
@@ -671,26 +755,7 @@
 				return false;
 			},
 			ttShow : function(event) {
-				var t = event.target;
-				var td = document.getElementById("tdata");
-				td.textContent = t.firstChild.textContent;
-				t.style.fill = '#F2635F';
-				try {
-					if(this.props.prevBar != t) {
-						//this.props.prevBar.style.fill = 'steelblue';
-						this.props.prevBar.setAttribute("style", "fill:steelblue;");
-						//console.log('new style');
-					}
 
-				}
-				catch (e) {
-					//console.log("2!");
-				}
-				
-				this.props.prevBar = t;
-				// UBERACHTUNG!!!! суперкостыль
-				document.getElementById("bar").innerHTML = "";
-				chart.bar('bar', barprops);
 			},
 			generateBars : function(start,end) {
 				var LOX = this.props.aProps.LOX;
@@ -711,11 +776,6 @@
 					barPosition = oY-barHeight;
 					var bar = set.bar(x,barPosition,'b'+i,barWidth,barHeight,'chartBar');
 
-					if(bar.id == this.props.prevBar.id) {
-						bar.style.fill = '#F2635F';
-					}
-				
-
 					/*var titlet = fnSvgElement.createNewElement('text')
 											.addAttribute('id','tt'+i )
 											.addAttribute('x', x)
@@ -733,11 +793,19 @@
 					title.textContent = this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' Вт';
 					bar.appendChild(title);
 
+					// CAN BE OPTIMISED
+					if(i == parseInt((end+start)/2)) {
+						bar.style.opacity = 0.7;
+						bar.style.fill = '#F2635F';
+						var td = document.getElementById("tdata");
+						td.textContent = bar.firstChild.textContent;
+					}
+
 			 		//group.appendChild(titlet);
 
-					bar.addEventListener('mousedown', this.ttShow.bind(this));
+					bar.addEventListener('mousedown', this.mousedown.bind(this));
 					if ('ontouchstart' in window) {
-						bar.addEventListener('touchstart', this.ttShow.bind(this));
+						bar.addEventListener('touchstart', this.mousedown.bind(this));
 					}
 					//"var tt = document.getElementById(\"tt"+i+"\"); tt.style.x = event.screenX; tt.style.y = event.screenY;tt.style.visibility='visible';"); // this.firstChild.style.visibility='visible'
 
@@ -791,6 +859,7 @@
 				window['axis'][this.props.axisType](this.props.svgObj, xCords, this.props.yCordsSorted,[],0, this.props.height, this.props.width); 
 				document.getElementById(id).appendChild(this.props.svgObj);
 				this.props.aProps = axis.props;
+				//console.log(barprops.start);
 				this.generateBars(barprops.start+1, barprops.start+this.props.datumsPerScreen);
 				//this.props.start=barprops.start+1;
 				//console.log(barprops.start, "to", barprops.start+this.props.datumsPerScreen);
@@ -844,11 +913,11 @@
 						if(xmlhttp.status == 200) {
 							try {
 								success(JSON.parse(xmlhttp.responseText));*/
-								switch(document.getElementById('interv').value)
+								/*switch(document.getElementById('interv').value)
 								{
-									case '1':
+									case '1':*/
 										success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
-										break;
+								/*		break;
 									case '2':
 										success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":15555.100, \"A4\":265461.100,\"P\":123.65, \"U\":220.14 }" ));
 										break;
@@ -858,7 +927,7 @@
 									case '4':
 										success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":0, \"A2\":0, \"A3\":0.00, \"A4\":0,\"P\":123.65, \"U\":220.14 }" ));
 										break;
-								}
+								}*/
 								
 
 								/*
@@ -1056,75 +1125,102 @@
 			</div>
 		</div>
 		<div class="content-body">
+
 			<div class="section-row">
 				<div class="section">
 					<h2>Потребление (кВт•ч)</h2>
-					<div class="section-body">
+					
 
-						<div id="pies" class="ss">
-							<div id="pie" class="sss"></div>
+
+
+					<div class="tabs">
+					    <input type="radio" name="inset" value="" id="tab_1" checked>
+					    <label for="tab_1">Общее</label>
+
+
+					    <input type="radio" name="inset" value="" id="tab_2">
+					    <label for="tab_2">Период</label>
+
+						<div id="txt_1" class="section-body">
+							<div id="pies" class="ss">
+								<div id="pie" class="sss"></div>
+							</div>
+
+							<div class="ss">
+								<table class="sss">
+									<tr>
+										<td class="ssss">
+											<element id="en1"></element>
+										</td>
+										<td>
+											<element id="env1"></element>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<element id="en2"></element>
+										</td>
+										<td>
+											<element id="env2"></element>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<element id="en3"></element>
+										</td>
+										<td>
+											<element id="env3"></element>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<element id="en4"></element>
+										</td>
+										<td>
+											<element id="env4"></element>
+										</td>
+									</tr>
+									<tr style='height:50px'>
+										<td>
+											<element id="et"></element>
+										</td>
+										<td>
+											<element id="envt"></element>
+										</td>
+									</tr>  
+								</table>
+							</div>
 						</div>
 
-						<div class="ss">
-							<table class="sss">
-								<tr>
-									<td class="ssss">
-										<element id="en1"></element>
-									</td>
-									<td>
-										<element id="env1"></element>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<element id="en2"></element>
-									</td>
-									<td>
-										<element id="env2"></element>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<element id="en3"></element>
-									</td>
-									<td>
-										<element id="env3"></element>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<element id="en4"></element>
-									</td>
-									<td>
-										<element id="env4"></element>
-									</td>
-								</tr>
-								<tr style='height:50px'>
-									<td>
-										<element id="et"></element>
-									</td>
-									<td>
-										<element id="envt"></element>
-									</td>
-								</tr>  
-							</table>
+
+
+						<div id="txt_2" class="section-body">
+							<div class="sss">
+								<div class="ss">
+									<div class="dates blue semi-square">
+										<input type="date" name="ds">
+									</div>
+								</div>
+								<div class="ss">
+									<div class="dates blue semi-square">
+										<input type="date" name="ds">
+									</div>
+								</div>
+								<div class="ss">
+									<div class="dates blue semi-square">
+										<button type="submit">Показать</button>
+									</div>
+								</div>
+							</div>
 						</div>
 
-					</div>
-					<div class="ss">
-					<div class="s">
-						<div class="styled-select blue semi-square">
-							<select id="interv" onchange="refreshData()"> <!-- onchange or other?? -->
-								<option value="1">За всё время</option>
-								<option value="2">За 30 дней</option>
-								<option value="3">За 7 дней</option>
-								<option value="4">За 24 часа</option>
-							</select>
-						</div>
-					</div>
-					</div>
+					</div> <!-- #content-region -->
+
+
+
 				</div>
 			</div>
+
 			<div class="section-row">
 
 				<div class="section">
