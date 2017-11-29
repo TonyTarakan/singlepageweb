@@ -111,15 +111,27 @@
 	.section-body
 	{
 		/*border-top:1px solid #f5f5f5;*/
-		border-top:1px solid #C0C0C0;
+		
 		margin-top:-0.05rem;
-		padding-top: 1rem;
+		
 		padding-bottom: 1rem;
 		font-size:1.4rem;
 		flex:1;
 		background-color:#fff;
 		display:flex;
 		flex-direction:row;
+		flex-wrap:nowrap;
+		justify-content:center;
+		width:100%
+	}
+	.tabsect
+	{
+		/*border-top:1px solid #f5f5f5;*/
+		border-top:1px solid #C0C0C0;
+		padding-top: 1rem;
+		margin-top:-0.05rem;
+		display:flex;
+		flex-direction:column;
 		flex-wrap:nowrap;
 		justify-content:center;
 		width:100%
@@ -214,8 +226,10 @@
 	.barcht
 	{
 		border-top: 1px solid #C0C0C0;
-		padding-top: 0.4rem;
-		font-size:1.4rem
+		padding: 0.4rem;
+		font-size:1.4rem;
+		/*width: 250px;
+		display:inline-block;*/
 	}
 
 
@@ -567,11 +581,11 @@
 			},
 			generateAxis: function (level, color, text) {
 
-
-				var xPath = pathG.move(this.props.SX + this.props.LOX/2, this.props.SY) + ' ' + pathG.lineTo(this.props.SX + this.props.LOX/2, this.props.OY);
+				console.log(this.props.SY , this.props.OY);
+				var xPath = pathG.move(this.props.SX + this.props.LOX/2, 0) + ' ' + pathG.lineTo(this.props.SX + this.props.LOX/2, this.props.OY+10);
 	        pathObj = fnSvgElement.createNewElement('path')
 	                .addAttribute('d', xPath)
-	                .addAttribute('stroke-width', '1')
+	                .addAttribute('stroke-width', '0.5')
 	                .addAttribute('class', 'xAxis')
 	                .addAttribute('stroke', 'black')
 	                .addAttribute('fill', 'none')
@@ -701,49 +715,69 @@
 				'axisType': 'generateSimpleAxis',
 				'aProps': {},
 				'prevPos': 0,
+				'presentPos': 0,
+				'grag' : false,
+				'veloc' : 0,
 				'start':0,
 				'end':0,
 				'length':0,
 				'groupBar':'undefined'
+
 			},
 			removeBars:function() {
 				var group = document.getElementsByClassName('bargroup')[0];
 			},
-			dragSvg : function(event) {
-				if(event.buttons!=0) {
-					var presentPos;
-					if ('ontouchstart' in window)
-						presentPos = event.touches[0].clientX; 
-					else
-						presentPos = event.screenX;
+			move:function() {
+				if(elBar.props.prevPos!=0) {
+					var diff = elBar.props.presentPos - elBar.props.prevPos;					
 
-					//console.log("PrevPos", this.props.prevPos, "presentPos", presentPos);
-					if(this.props.prevPos!=0) {
-
-						var diff = (presentPos-this.props.prevPos);
-						var thres = this.props.aProps.LOX/this.props.datumsPerScreen;
-						//console.log(thres);
-						if(diff<-thres && this.props.start+this.props.datumsPerScreen/2+1 < this.props.length) {
-							this.props.start = this.props.start+1;
-							this.props.end = this.props.end+1;
-							this.props.svgObj.removeChild(this.props.groupBar);
-							this.generateBars(this.props.start+1,this.props.start+this.props.datumsPerScreen);
-							//console.log("GenBars(<-):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
-							this.props.prevPos = presentPos;
-						}
-						if(diff>thres && this.props.start > -this.props.datumsPerScreen/2+1) {
-							this.props.start= this.props.start-1;
-							this.props.end = this.props.end-1;
-							this.props.svgObj.removeChild(this.props.groupBar);
-							this.generateBars(this.props.start+1,this.props.start+this.props.datumsPerScreen);
-							//console.log("GenBars(->):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
-							this.props.prevPos = presentPos;
-						}
+					var thres = elBar.props.aProps.LOX/elBar.props.datumsPerScreen;
+					//console.log(thres);
+					if(diff<-12 && elBar.props.start+elBar.props.datumsPerScreen/2+1 < elBar.props.length) {
+						elBar.props.start = elBar.props.start+1;
+						elBar.props.end = elBar.props.end+1;
+						elBar.props.svgObj.removeChild(elBar.props.groupBar);
+						elBar.generateBars(elBar.props.start+1,elBar.props.start+elBar.props.datumsPerScreen);
+						elBar.props.prevPos = elBar.props.presentPos;
 					}
-					else
-						this.props.prevPos = presentPos;
-					barprops.start = this.props.start;
-					barprops.end = this.props.end;
+					if(diff>12 && elBar.props.start > -elBar.props.datumsPerScreen/2+1) {
+						elBar.props.start= elBar.props.start-1;
+						elBar.props.end = elBar.props.end-1;
+						elBar.props.svgObj.removeChild(this.props.groupBar);
+						elBar.generateBars(elBar.props.start+1,elBar.props.start+elBar.props.datumsPerScreen);
+						elBar.props.prevPos = elBar.props.presentPos;
+					}
+				}
+				else
+					elBar.props.prevPos = elBar.props.presentPos;
+				barprops.start = elBar.props.start;
+				barprops.end = elBar.props.end;
+			},
+			dragSvg : function(event) {
+				if(event) {
+					if(event.buttons!=0) {
+						if ('ontouchstart' in window)
+							elBar.props.presentPos = event.touches[0].clientX; 
+						else
+							elBar.props.presentPos = event.screenX;
+
+						elBar.props.veloc = elBar.props.presentPos-elBar.props.prevPos;
+
+						elBar.move();
+					}
+				}
+				else
+				{
+					console.log("dragSvg timeout !!!");
+					//console.log(elBar.props.veloc);
+					
+					elBar.props.presentPos = elBar.props.prevPos + elBar.props.veloc;
+					elBar.props.veloc*=0.9;
+					elBar.move();
+
+					if(elBar.props.veloc > 12 || elBar.props.veloc < -12) {
+						setTimeout(elBar.dragSvg, 50/Math.pow(Math.abs(elBar.props.veloc),0.2));
+					}
 				}
 			},
 			mousedown : function(event) {
@@ -752,10 +786,17 @@
 					this.props.prevPos = event.touches[0].clientX;
 				else
 					this.props.prevPos = event.screenX;
+
+				this.props.drag = true;
+				document.getElementById("bar").innerHTML = "";
+				chart.bar('bar', barprops);
 				return false;
 			},
-			ttShow : function(event) {
-
+			mouseup : function(event) {
+				this.props.drag = false;
+				console.log("dragSvg timeo");
+				setTimeout(this.dragSvg, 50);
+				return false;
 			},
 			generateBars : function(start,end) {
 				var LOX = this.props.aProps.LOX;
@@ -804,8 +845,10 @@
 			 		//group.appendChild(titlet);
 
 					bar.addEventListener('mousedown', this.mousedown.bind(this));
+					bar.addEventListener('mouseup', this.mouseup.bind(this));
 					if ('ontouchstart' in window) {
 						bar.addEventListener('touchstart', this.mousedown.bind(this));
+						bar.addEventListener('touchend', this.mouseup.bind(this));
 					}
 					//"var tt = document.getElementById(\"tt"+i+"\"); tt.style.x = event.screenX; tt.style.y = event.screenY;tt.style.visibility='visible';"); // this.firstChild.style.visibility='visible'
 
@@ -866,9 +909,11 @@
 				this.props.end=this.props.datumsPerScreen;
 				this.props.svgObj.addEventListener('mousemove',this.dragSvg.bind(this));
 				this.props.svgObj.addEventListener('mousedown',this.mousedown.bind(this));
+				this.props.svgObj.addEventListener('mouseup',this.mouseup.bind(this));
 				if ('ontouchstart' in window) {
 					this.props.svgObj.addEventListener('touchmove',this.dragSvg.bind(this));
 					this.props.svgObj.addEventListener('touchstart',this.mousedown.bind(this));
+					this.props.svgObj.addEventListener('touchend',this.mouseup.bind(this));
 				}
 			}
 		}; 
@@ -1023,7 +1068,7 @@
 						var sum = 0;
 						for (var i = 0; i < pp.data.length; i++) {
 							sum += pp.data[i];
-							document.getElementById("en" + (i+1).toString()).innerHTML  = "<span style='color:"+pp.colours[i]+"'>■</span> Тариф "+(i+1).toString()+":";
+							document.getElementById("en" + (i+1).toString()).innerHTML  = "<span style='color:"+pp.colours[i]+"'>■</span> Тариф "+(i+1).toString();
 							document.getElementById("env" + (i+1).toString()).innerHTML  = "{0}".format(pp.data[i].toFixed(1).toString());
 						}
 						
@@ -1032,7 +1077,7 @@
 						{
 							chart.pie('pie', pp);
 						}
-						document.getElementById("et").innerHTML  = "Сумма:";
+						document.getElementById("et").innerHTML  = "○ Сумма";
 						document.getElementById("envt").innerHTML  = "{0}".format(sum.toFixed(1).toString());
 
 					}
@@ -1141,60 +1186,113 @@
 					    <input type="radio" name="inset" value="" id="tab_2">
 					    <label for="tab_2">Период</label>
 
-						<div id="txt_1" class="section-body">
-							<div id="pies" class="ss">
-								<div id="pie" class="sss"></div>
-							</div>
+						<div id="txt_1" class="tabsect">
+							<div class="section-body">
+								<div id="pies" class="ss">
+									<div id="pie" class="sss"></div>
+								</div>
 
-							<div class="ss">
-								<table class="sss">
-									<tr>
-										<td class="ssss">
-											<element id="en1"></element>
-										</td>
-										<td>
-											<element id="env1"></element>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<element id="en2"></element>
-										</td>
-										<td>
-											<element id="env2"></element>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<element id="en3"></element>
-										</td>
-										<td>
-											<element id="env3"></element>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<element id="en4"></element>
-										</td>
-										<td>
-											<element id="env4"></element>
-										</td>
-									</tr>
-									<tr style='height:50px'>
-										<td>
-											<element id="et"></element>
-										</td>
-										<td>
-											<element id="envt"></element>
-										</td>
-									</tr>  
-								</table>
+								<div class="ss">
+									<table class="sss">
+										<tr>
+											<td class="ssss">
+												<element id="en1"></element>
+											</td>
+											<td>
+												<element id="env1"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="en2"></element>
+											</td>
+											<td>
+												<element id="env2"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="en3"></element>
+											</td>
+											<td>
+												<element id="env3"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="en4"></element>
+											</td>
+											<td>
+												<element id="env4"></element>
+											</td>
+										</tr>
+										<tr style='height:50px'>
+											<td>
+												<element id="et"></element>
+											</td>
+											<td>
+												<element id="envt"></element>
+											</td>
+										</tr>  
+									</table>
+								</div>
 							</div>
 						</div>
 
 
 
-						<div id="txt_2" class="section-body">
+						<div id="txt_2" class="tabsect">
+							<div class="section-body">
+								<div id="pies" class="ss">
+									<div id="pie" class="sss"></div>
+								</div>
+
+								<div class="ss">
+									<table class="sss">
+										<tr>
+											<td class="ssss">
+												<element id="en1"></element>
+											</td>
+											<td>
+												<element id="env1"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="en2"></element>
+											</td>
+											<td>
+												<element id="env2"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="en3"></element>
+											</td>
+											<td>
+												<element id="env3"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="en4"></element>
+											</td>
+											<td>
+												<element id="env4"></element>
+											</td>
+										</tr>
+										<tr style='height:50px'>
+											<td>
+												<element id="et"></element>
+											</td>
+											<td>
+												<element id="envt"></element>
+											</td>
+										</tr>  
+									</table>
+								</div>
+							</div>
+
 							<div class="sss">
 								<div class="ss">
 									<div class="dates blue semi-square">
@@ -1212,8 +1310,8 @@
 									</div>
 								</div>
 							</div>
+						
 						</div>
-
 					</div> <!-- #content-region -->
 
 
@@ -1242,10 +1340,8 @@
 			<div class="section-row">
 				<div class="section">
 					<h2>График средней мощности</h2>
-					<div class="barcht">
-						<strong id="tdata"></strong>
-					</div>
-						<div id="bar" class="barch"></div>
+					<div id="tdata" class="barcht"></div>
+					<div id="bar" class="barch"></div>
 				</div>
 			</div>
 
