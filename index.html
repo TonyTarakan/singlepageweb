@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 
 <head>
 	<meta charset="utf-8">
@@ -152,7 +152,7 @@
 	}
 	.dates input,button
 	{
-		margin: 0.25rem;
+		margin-bottom: 0.5em;
 		outline: none;
 		background: #fff;
 		border:1px solid #00a5cd;
@@ -225,7 +225,7 @@
 	}
 	.barcht
 	{
-		border-top: 1px solid #C0C0C0;
+		/*border-top: 1px solid #C0C0C0;*/
 		padding: 0.4rem;
 		font-size:1.4rem;
 		/*width: 250px;
@@ -378,7 +378,7 @@
 		};
 
 		newObj = {
-			bar:function(){
+			bar:function() {
 				var b = Object.assign({},elBar);
 				return b;
 			}
@@ -581,7 +581,7 @@
 			},
 			generateAxis: function (level, color, text) {
 
-				console.log(this.props.SY , this.props.OY);
+				//console.log(this.props.SY , this.props.OY);
 				var xPath = pathG.move(this.props.SX + this.props.LOX/2, 0) + ' ' + pathG.lineTo(this.props.SX + this.props.LOX/2, this.props.OY+10);
 	        pathObj = fnSvgElement.createNewElement('path')
 	                .addAttribute('d', xPath)
@@ -631,7 +631,7 @@
 				}
 				var max = Math.ceil(ycords[length - 1]);
 				this.props.yAxPos = max;
-				console.log(max, range);
+				//console.log(max, range);
 				var a_diff = (oY - startY) / (max / range);
 				//console.log("a_diff",a_diff);
 				this.props.aDiff = a_diff/range;
@@ -768,7 +768,7 @@
 				}
 				else
 				{
-					console.log("dragSvg timeout !!!");
+					//console.log("dragSvg timeout !!!");
 					//console.log(elBar.props.veloc);
 					
 					elBar.props.presentPos = elBar.props.prevPos + elBar.props.veloc;
@@ -794,7 +794,7 @@
 			},
 			mouseup : function(event) {
 				this.props.drag = false;
-				console.log("dragSvg timeo");
+				//console.log("dragSvg timeo");
 				setTimeout(this.dragSvg, 50);
 				return false;
 			},
@@ -814,6 +814,8 @@
 
 				for(var i=start;i<=end;i++) {
 					var barHeight = ((parseFloat(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
+					if(barHeight == 0) barHeight = 3;
+					if(isNaN(barHeight)) barHeight = 0;
 					barPosition = oY-barHeight;
 					var bar = set.bar(x,barPosition,'b'+i,barWidth,barHeight,'chartBar');
 
@@ -923,6 +925,7 @@
 		var error_counter = 0;
 		var req_counter = 999999;
 		var needBar = false;
+		var pieh;
 
 		String.prototype.format = function() {
 			var formatted = this;
@@ -932,24 +935,61 @@
 			return formatted;
 		};
 
-		function get_data(success, success1, error, timeout) {
-			
+		function clearPD() {
+			document.getElementById("penvt").innerHTML  = "";
+			document.getElementById("penv1").innerHTML  = "";
+			document.getElementById("penv2").innerHTML  = "";
+			document.getElementById("penv3").innerHTML  = "";
+			document.getElementById("penv4").innerHTML  = "";
+			document.getElementById("pent").innerHTML  = "";
+			document.getElementById("pen1").innerHTML  = "";
+			document.getElementById("pen2").innerHTML  = "";
+			document.getElementById("pen3").innerHTML  = "";
+			document.getElementById("pen4").innerHTML  = "";
+			document.getElementById("ppie").innerHTML  = "";
+			document.getElementById("pieper").style.height = 0;
+		};
+
+		function get_data(success, success1, error, timeout, period) {
 			if(!needBar) {
+				var param = "";
+				var err = false;
+
+				if(period) {
+					if(!document.getElementById('dfrom').value) {
+						document.getElementById('dfrom').style.color = "red";
+						clearPD();
+						err = true;
+					}
+					else document.getElementById('dfrom').style.color = "#00a5cd";
+					if(!document.getElementById('dto').value) {
+						document.getElementById('dto').style.color = "red";
+						clearPD();
+						err = true;
+					}
+					else document.getElementById('dto').style.color = "#00a5cd";
+					if(err) return;
+					if(document.getElementById('dto').value <= document.getElementById('dfrom').value) {
+						clearPD();
+						document.getElementById('dfrom').style.color = "red";
+						document.getElementById('dto').style.color = "red";
+						err = true;
+					}
+					if(err) return;
+					document.getElementById("pieper").style.height = pieh;
+
+
+					param = param + "?from=" + document.getElementById('dfrom').value + "&to=" + document.getElementById('dto').value;
+					console.log(param);
+				}
 				/*var xmlhttp = new XMLHttpRequest();
 				
-				switch(document.getElementById('interv').value)
-				{
-					case '1':
-						break;
-					case '2':
-						break;
-					case '3':
-						break;
-					case '4':
-						break;
+				var param = "";
+				if(period) {
+					param = param + "?from=" + ;
 				}
 
-				xmlhttp.open('GET', rs+"get", true);
+				xmlhttp.open('GET', rs+"get"+param, true);
 
 				xmlhttp.timeout = timeout || 2000;
 
@@ -958,23 +998,8 @@
 						if(xmlhttp.status == 200) {
 							try {
 								success(JSON.parse(xmlhttp.responseText));*/
-								/*switch(document.getElementById('interv').value)
-								{
-									case '1':*/
-										success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
-								/*		break;
-									case '2':
-										success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":15555.100, \"A4\":265461.100,\"P\":123.65, \"U\":220.14 }" ));
-										break;
-									case '3':
-										success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":455.001, \"A2\":4455.100, \"A3\":1455.100, \"A4\":5461.100,\"P\":123.65, \"U\":220.14 }" ));
-										break;
-									case '4':
-										success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":0, \"A2\":0, \"A3\":0.00, \"A4\":0,\"P\":123.65, \"U\":220.14 }" ));
-										break;
-								}*/
-								
-
+								if(period) success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":100.001, \"A2\":200.100, \"A3\":155.100, \"A4\":565.100}" ));
+								else success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
 								/*
 							}
 							catch (E) {
@@ -1008,7 +1033,7 @@
 							try {
 								success1(JSON.parse(xmlhttp1.responseText));
 								needBar = false;*/
-								success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));
+								success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 0, 0, 0, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));
 								needBar = false;
 								/*
 							}
@@ -1029,12 +1054,14 @@
 			}
 		}
 
-		function refreshData()
+		function refreshData(period)
 		{
 			get_data(
 				function(data) {
 					//console.log("Refresh PIE");
 					//console.log(document.getElementById('interv').value);
+					var p = "";
+					if(period) p = p + "p";
 
 					error_counter = 0;
 					req_counter++;
@@ -1061,40 +1088,42 @@
 					if(!isNaN(T3)) pp.data.push(T3);
 					if(!isNaN(T4)) pp.data.push(T4);
 					
-					barprops.time = parseInt(data.T);
+					//barprops.time = parseInt(data.T);
 
 					if(pp.data.length > 1)
 					{
 						var sum = 0;
 						for (var i = 0; i < pp.data.length; i++) {
 							sum += pp.data[i];
-							document.getElementById("en" + (i+1).toString()).innerHTML  = "<span style='color:"+pp.colours[i]+"'>■</span> Тариф "+(i+1).toString();
-							document.getElementById("env" + (i+1).toString()).innerHTML  = "{0}".format(pp.data[i].toFixed(1).toString());
+							document.getElementById( p+"en"+(i+1).toString() ).innerHTML  = "<span style='color:"+pp.colours[i]+"'>■</span> Тариф "+(i+1).toString();
+							document.getElementById( p+"env"+(i+1).toString() ).innerHTML  = "{0}".format( pp.data[i].toFixed(1).toString() );
 						}
 						
-						document.getElementById("pie").innerHTML = "";
+						document.getElementById(p +"pie").innerHTML = "";
 						if(sum != 0)
 						{
-							chart.pie('pie', pp);
+							chart.pie(p +'pie', pp);
 						}
-						document.getElementById("et").innerHTML  = "○ Сумма";
-						document.getElementById("envt").innerHTML  = "{0}".format(sum.toFixed(1).toString());
+						document.getElementById(p +"ent").innerHTML  = "○ Сумма";
+						document.getElementById(p +"envt").innerHTML  = "{0}".format(sum.toFixed(1).toString());
 
 					}
 					else
 					{	try {
-							el = document.getElementById("pies");
+							el = document.getElementById(p +"pies");
 							el.parentNode.removeChild(el);
 						} catch (e) {
 							//console.log("1!");
 						}
-						document.getElementById("envt").innerHTML = T1.toString();
+						document.getElementById(p +"envt").innerHTML = T1.toString();
 					}
 					
-					document.getElementById("power").innerHTML	= data.P.toFixed(1).toString();
-					document.getElementById("voltage").innerHTML  = data.U.toFixed(1).toString();
+					if(!period) {
+						document.getElementById("power").innerHTML	= data.P.toFixed(1).toString();
+						document.getElementById("voltage").innerHTML  = data.U.toFixed(1).toString();
 
-					setTimeout(refreshData, 2000);
+						setTimeout(refreshData, 2000);
+					}
 					
 				},
 				function(data) {
@@ -1120,6 +1149,7 @@
 						document.getElementById("en3").innerHTML  = "";
 						document.getElementById("en4").innerHTML  = "";
 						document.getElementById("pie").innerHTML  = "";
+						clearPD();
 						document.getElementById("tdata").innerHTML  = "";
 						document.getElementById("bar").innerHTML  = "";
 						document.getElementById("power").innerHTML	= "";
@@ -1132,7 +1162,8 @@
 					
 					setTimeout(refreshData, 3000);
 				},
-				2000
+				2000,
+				period
 			);
 			//elBar.mouseup();
 		}
@@ -1141,6 +1172,8 @@
 
 		window.onload = function()
 		{
+			pieh = document.getElementById("pieper").style.height;
+			clearPD();
 			setTimeout(refreshData, 2000);
 		};
 
@@ -1228,7 +1261,7 @@
 										</tr>
 										<tr style='height:50px'>
 											<td>
-												<element id="et"></element>
+												<element id="ent"></element>
 											</td>
 											<td>
 												<element id="envt"></element>
@@ -1242,51 +1275,51 @@
 
 
 						<div id="txt_2" class="tabsect">
-							<div class="section-body">
-								<div id="pies" class="ss">
-									<div id="pie" class="sss"></div>
+							<div class="section-body" id="pieper">
+								<div id="ppies" class="ss">
+									<div id="ppie" class="sss"></div>
 								</div>
 
 								<div class="ss">
 									<table class="sss">
 										<tr>
 											<td class="ssss">
-												<element id="en1"></element>
+												<element id="pen1"></element>
 											</td>
 											<td>
-												<element id="env1"></element>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<element id="en2"></element>
-											</td>
-											<td>
-												<element id="env2"></element>
+												<element id="penv1"></element>
 											</td>
 										</tr>
 										<tr>
 											<td>
-												<element id="en3"></element>
+												<element id="pen2"></element>
 											</td>
 											<td>
-												<element id="env3"></element>
+												<element id="penv2"></element>
 											</td>
 										</tr>
 										<tr>
 											<td>
-												<element id="en4"></element>
+												<element id="pen3"></element>
 											</td>
 											<td>
-												<element id="env4"></element>
+												<element id="penv3"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="pen4"></element>
+											</td>
+											<td>
+												<element id="penv4"></element>
 											</td>
 										</tr>
 										<tr style='height:50px'>
 											<td>
-												<element id="et"></element>
+												<element id="pent"></element>
 											</td>
 											<td>
-												<element id="envt"></element>
+												<element id="penvt"></element>
 											</td>
 										</tr>  
 									</table>
@@ -1296,17 +1329,17 @@
 							<div class="sss">
 								<div class="ss">
 									<div class="dates blue semi-square">
-										<input type="date" name="ds">
+										<input type="date" id="dfrom">
 									</div>
 								</div>
 								<div class="ss">
 									<div class="dates blue semi-square">
-										<input type="date" name="ds">
+										<input type="date" id="dto">
 									</div>
 								</div>
 								<div class="ss">
 									<div class="dates blue semi-square">
-										<button type="submit">Показать</button>
+										<button type="submit" onclick = "refreshData(true);">Показать</button>
 									</div>
 								</div>
 							</div>
