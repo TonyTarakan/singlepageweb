@@ -136,20 +136,6 @@
 		justify-content:center;
 		width:100%
 	}
-	.styled-select select 
-	{
-		outline: none;
-		background: #fff;
-		border:1px solid #00a5cd;
-		font-size: 18px;
-		padding-left: 10px;
-		height: 36px;
-		width: 250px;
-		-webkit-border-radius: 5px;
-		-moz-border-radius: 5px;
-		border-radius: 5px;
-		color:#00a5cd;
-	}
 	.dates input,button
 	{
 		margin-bottom: 0.5em;
@@ -187,6 +173,9 @@
 		flex-direction:column;
 		text-align:left;
 		white-space: nowrap;
+	}
+	.direc {
+		flex-direction:row !important; 
 	}
 	.ssss
 	{
@@ -314,6 +303,9 @@
 		{
 			font-size:1.1rem;
 		}
+		.direc {
+			flex-direction:column !important;
+		}
 	}
 	@media only screen and (min-width: 600px) and (max-width: 768px)
 	{
@@ -330,7 +322,7 @@
 		{
 			font-size:1.2rem
 		}
-			.ssss
+		.ssss
 		{
 			min-width:105px
 		}
@@ -616,7 +608,7 @@
 				var startX = this.props.SX = 0.05*width;
 				var startY = this.props.SY = 0.08*height;
 				this.props.OX = startX;
-				var oY = this.props.OY = height - 0.1*height;
+				var oY = this.props.OY = height - 0.02*height;
 				var endX = this.props.EX = width - startX;
 				this.props.EY = oY;
 				this.props.LOX = endX - startX;
@@ -814,7 +806,7 @@
 
 				for(var i=start;i<=end;i++) {
 					var barHeight = ((parseFloat(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
-					if(barHeight == 0) barHeight = 3;
+					if(barHeight == 0) barHeight = 2;
 					if(isNaN(barHeight)) barHeight = 0;
 					barPosition = oY-barHeight;
 					var bar = set.bar(x,barPosition,'b'+i,barWidth,barHeight,'chartBar');
@@ -866,6 +858,7 @@
 				svg.appendChild(group);
 			},
 			generate: function (id, properties) {
+
 				delete document.getElementById(id);
 				for (var i in properties) {
 					this.props[i] = properties[i];
@@ -889,9 +882,9 @@
 					var hours = d.getHours();
 					var minutes =  parseInt( ("0" + d.getMinutes()).substr(-2) );
 
-
-					xCords.push("с " + hours1 + ":" + (minutes1>0 ? minutes1 : "00") + " по " + hours + ":" + (minutes>0 ? minutes : "00"));
-					yCords.push(data[i]*2);
+					var date = data[i].ts;
+					xCords.push(date.substr(8, 2) + "/" + date.substr(5, 2) + "/" + date.substr(0, 4) + " " + date.substr(11, 5));
+					yCords.push(data[i].val*2);
 
 					
 				}
@@ -951,28 +944,29 @@
 		};
 
 		function get_data(success, success1, error, timeout, period) {
+			var rs = '/api/v1/';
 			if(!needBar) {
 				var param = "";
 				var err = false;
 
 				if(period) {
 					if(!document.getElementById('dfrom').value) {
-						document.getElementById('dfrom').style.color = "red";
+						document.getElementById('dfrom').style.border = "1px solid red";
 						clearPD();
 						err = true;
 					}
-					else document.getElementById('dfrom').style.color = "#00a5cd";
+					else document.getElementById('dfrom').style.border = "1px solid #00a5cd";
 					if(!document.getElementById('dto').value) {
-						document.getElementById('dto').style.color = "red";
+						document.getElementById('dto').style.border = "1px solid red";
 						clearPD();
 						err = true;
 					}
-					else document.getElementById('dto').style.color = "#00a5cd";
+					else document.getElementById('dto').style.border = "1px solid #00a5cd";
 					if(err) return;
 					if(document.getElementById('dto').value <= document.getElementById('dfrom').value) {
 						clearPD();
-						document.getElementById('dfrom').style.color = "red";
-						document.getElementById('dto').style.color = "red";
+						document.getElementById('dfrom').style.border = "1px solid red";
+						document.getElementById('dto').style.border = "1px solid red";
 						err = true;
 					}
 					if(err) return;
@@ -980,14 +974,8 @@
 
 
 					param = param + "?from=" + document.getElementById('dfrom').value + "&to=" + document.getElementById('dto').value;
-					console.log(param);
 				}
-				/*var xmlhttp = new XMLHttpRequest();
-				
-				var param = "";
-				if(period) {
-					param = param + "?from=" + ;
-				}
+				var xmlhttp = new XMLHttpRequest();
 
 				xmlhttp.open('GET', rs+"get"+param, true);
 
@@ -997,10 +985,10 @@
 					if (xmlhttp.readyState == XMLHttpRequest.DONE) {
 						if(xmlhttp.status == 200) {
 							try {
-								success(JSON.parse(xmlhttp.responseText));*/
-								if(period) success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":100.001, \"A2\":200.100, \"A3\":155.100, \"A4\":565.100}" ));
-								else success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));
-								/*
+								success(JSON.parse(xmlhttp.responseText));
+								/*if(period) success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":0.001, \"A2\":0.100, \"A3\":0.100, \"A4\":0.100}" ));
+								else success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));*/
+								
 							}
 							catch (E) {
 								error("Fail to parse json get");
@@ -1015,13 +1003,13 @@
 					}
 				};
 			
-				xmlhttp.send(null);*/
+				xmlhttp.send(null);
 			}
 
 			
 			else {
 
-				/*var xmlhttp1 = new XMLHttpRequest();
+				var xmlhttp1 = new XMLHttpRequest();
 
 				xmlhttp1.open('GET', rs+"lp", true);
 
@@ -1032,10 +1020,12 @@
 						if(xmlhttp1.status == 200) {
 							try {
 								success1(JSON.parse(xmlhttp1.responseText));
-								needBar = false;*/
-								success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 0, 0, 0, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));
 								needBar = false;
-								/*
+								/*success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 0, 0, 0, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));*/
+
+								/*success1(JSON.parse( "[{\"ts\":\"2016-02-28T00:00:00+00:00\",\"d\":3600,\"val\":4554},{\"ts\":\"2016-02-28T01:00:00+00:00\",\"d\":3600,\"val\":456},{\"ts\":\"2016-02-28T02:00:00+00:00\",\"d\":3600,\"val\":231},{\"ts\":\"2016-02-28T03:00:00+00:00\",\"d\":3600,\"val\":6745},{\"ts\":\"2016-02-28T04:00:00+00:00\",\"d\":3600,\"val\":7857},{\"ts\":\"2016-02-28T05:00:00+00:00\",\"d\":3600,\"val\":456},{\"ts\":\"2016-02-28T06:00:00+00:00\",\"d\":3600,\"val\":836},{\"ts\":\"2016-02-28T07:00:00+00:00\",\"d\":3600,\"val\":231},{\"ts\":\"2016-02-28T08:00:00+00:00\",\"d\":3600,\"val\":8788},{\"ts\":\"2016-02-28T09:00:00+00:00\",\"d\":3600,\"val\":798},{\"ts\":\"2016-02-28T10:00:00+00:00\",\"d\":3600,\"val\":5458},{\"ts\":\"2016-02-28T11:00:00+00:00\",\"d\":3600,\"val\":785},{\"ts\":\"2016-02-28T12:00:00+00:00\",\"d\":3600,\"val\":857},{\"ts\":\"2016-02-28T13:00:00+00:00\",\"d\":3600,\"val\":4564},{\"ts\":\"2016-02-28T14:00:00+00:00\",\"d\":3600,\"val\":2525},{\"ts\":\"2016-02-28T15:00:00+00:00\",\"d\":3600,\"val\":1232},{\"ts\":\"2016-02-28T16:00:00+00:00\",\"d\":3600,\"val\":8787},{\"ts\":\"2016-02-28T17:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T18:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T19:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T20:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T21:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T22:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T23:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T00:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T01:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T02:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T03:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T04:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T05:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T06:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T07:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T08:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T09:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T10:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T11:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T12:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T13:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T14:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T15:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T16:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T17:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T18:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T19:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T20:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T21:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T22:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T23:00:00+00:00\",\"d\":3600,\"val\":6666}]" ));
+								needBar = false;*/
+								
 							}
 							catch (E) {
 								error("Fail to parse json lp");
@@ -1050,7 +1040,7 @@
 					}
 				};
 
-				xmlhttp1.send(null);*/		
+				xmlhttp1.send(null);	
 			}
 		}
 
@@ -1128,7 +1118,9 @@
 				},
 				function(data) {
 					error_counter = 0;
-					barprops.data = data.lp;
+					for (var i in data) {
+						barprops.data[i] = data[i];
+					}
 					document.getElementById("bar").innerHTML = "";
 					chart.bar('bar', barprops);
 
@@ -1174,7 +1166,7 @@
 		{
 			pieh = document.getElementById("pieper").style.height;
 			clearPD();
-			setTimeout(refreshData, 2000);
+			refreshData();
 		};
 
 		window.onresize = function()
@@ -1326,21 +1318,21 @@
 								</div>
 							</div>
 
-							<div class="sss">
+							<div class="ss direc">
 								<div class="ss">
-									<div class="dates blue semi-square">
+									<div class="dates">
 										<input type="date" id="dfrom">
 									</div>
 								</div>
 								<div class="ss">
-									<div class="dates blue semi-square">
+									<div class="dates">
 										<input type="date" id="dto">
 									</div>
 								</div>
-								<div class="ss">
-									<div class="dates blue semi-square">
-										<button type="submit" onclick = "refreshData(true);">Показать</button>
-									</div>
+							</div>
+							<div class="ss">
+								<div class="dates">
+									<button type="submit" onclick = "refreshData(true);">Показать</button>
 								</div>
 							</div>
 						
@@ -1375,6 +1367,21 @@
 					<h2>График средней мощности</h2>
 					<div id="tdata" class="barcht"></div>
 					<div id="bar" class="barch"></div>
+					<div class="ss">
+						<table class="sss" style="display:flex; flex-direction:row; justify-content:center;font-size: 1.4rem; margin-top: -5px; margin-bottom: 10px">
+										<tr class="barcht">
+											<td>
+												<element id="en1">20/11 09:00</element>
+											</td>
+											<td style="width: 100%;">
+												
+											</td>
+											<td>
+												<element id="env1">20/11 22:00</element>
+											</td>
+										</tr>
+						</table>	
+					</div>
 				</div>
 			</div>
 
