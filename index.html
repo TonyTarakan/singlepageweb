@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 
 <head>
 	<meta charset="utf-8">
@@ -110,8 +110,11 @@
 	}
 	.section-body
 	{
-		margin-top:1rem;
-		margin-bottom:1rem;
+		/*border-top:1px solid #f5f5f5;*/
+		
+		margin-top:-0.05rem;
+		
+		padding-bottom: 1rem;
 		font-size:1.4rem;
 		flex:1;
 		background-color:#fff;
@@ -121,24 +124,39 @@
 		justify-content:center;
 		width:100%
 	}
-	.styled-select select 
+	.tabsect
 	{
+		/*border-top:1px solid #f5f5f5;*/
+		border-top:1px solid #C0C0C0;
+		padding-top: 1rem;
+		margin-top:-0.05rem;
+		display:flex;
+		flex-direction:column;
+		flex-wrap:nowrap;
+		justify-content:center;
+		width:100%
+	}
+	.dates input,button
+	{
+		margin-bottom: 0.5em;
 		outline: none;
 		background: #fff;
 		border:1px solid #00a5cd;
-		font-size: 18px;
+		font-size: 16px;
 		padding-left: 10px;
-		height: 36px;
-		width: 250px;
+		padding-right: 10px;
 		-webkit-border-radius: 5px;
 		-moz-border-radius: 5px;
 		border-radius: 5px;
 		color:#00a5cd;
 	}
-	.s
-	{
-		margin: 1rem;
-		width:270px
+	.dates button {
+		padding: 10px;
+		width: 100px;
+		text-align:center;
+	}
+	.dates button:active {
+    	box-shadow:0 2px 20px 0 rgba(0,0,0,0.3),0 1px 5px 0 rgba(0,0,0,0.3),0 3px 1px -2px rgba(0,0,0,0.3)
 	}
 	.ss
 	{
@@ -154,8 +172,10 @@
 		justify-content:center;
 		flex-direction:column;
 		text-align:left;
-		font-weight: bold;
 		white-space: nowrap;
+	}
+	.direc {
+		flex-direction:row !important; 
 	}
 	.ssss
 	{
@@ -167,7 +187,7 @@
 		padding-bottom:.5rem;
 		color:#00a5cd;
 		font-weight:400;
-		border-bottom:1px solid #f5f5f5
+		/*border-bottom:1px solid #f5f5f5*/
 	}
 	.conic:hover
 	{
@@ -194,9 +214,56 @@
 	}
 	.barcht
 	{
-		margin-top: 0.4rem;
-		font-size:1.4rem
+		/*border-top: 1px solid #C0C0C0;*/
+		padding: 0.4rem;
+		font-size:1.4rem;
+		/*width: 250px;
+		display:inline-block;*/
 	}
+
+
+
+.tabs>input { display:none; }
+.tabs>div {
+	display:none;
+	cursor: pointer;
+	/*visibility: hidden;*/
+}
+.tabs>label {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    text-align: center;
+    color: #666666;
+    border: 1px solid #C0C0C0;
+    /*border-bottom: none;*/
+    background: #E0E0E0;
+    cursor: pointer;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display:inline-block;
+	width:48%
+}
+.tabs>input:checked + label {
+    color: #000000;
+    border-bottom: 1px solid #fff;
+    background: #FFFFFF;
+    /*box-shadow:-2px -2px 6px 0 rgba(0,0,0,0.3),2px -2px 6px 0 rgba(0,0,0,0.3);*/
+}
+#tab_1:checked ~ #txt_1,
+#tab_2:checked ~ #txt_2{ display: flex; }
+
+
+
+
+
+
+
+
+
+
+
+
+
 	@media only screen and (max-width: 600px)
 	{
 		.section-row
@@ -217,8 +284,8 @@
 		.section-body
 		{
 			font-size: 1.4rem;
-			margin-top: 0.2rem;
-			margin-bottom:0.2rem;
+			padding-top:0.4rem;
+			padding-bottom:0.4rem;
 			flex-direction:column;
 			flex-wrap:nowrap;
 			width:100%
@@ -236,6 +303,9 @@
 		{
 			font-size:1.1rem;
 		}
+		.direc {
+			flex-direction:column !important;
+		}
 	}
 	@media only screen and (min-width: 600px) and (max-width: 768px)
 	{
@@ -252,11 +322,17 @@
 		{
 			font-size:1.2rem
 		}
-			.ssss
+		.ssss
 		{
 			min-width:105px
 		}
 	}
+
+
+
+
+
+
 	</style>
 
 	<title>AS100</title>
@@ -294,7 +370,7 @@
 		};
 
 		newObj = {
-			bar:function(){
+			bar:function() {
 				var b = Object.assign({},elBar);
 				return b;
 			}
@@ -496,6 +572,20 @@
 				'baseUnit' : 0
 			},
 			generateAxis: function (level, color, text) {
+
+				//console.log(this.props.SY , this.props.OY);
+				var xPath = pathG.move(this.props.SX + this.props.LOX/2, 0) + ' ' + pathG.lineTo(this.props.SX + this.props.LOX/2, this.props.OY+10);
+	        pathObj = fnSvgElement.createNewElement('path')
+	                .addAttribute('d', xPath)
+	                .addAttribute('stroke-width', '0.5')
+	                .addAttribute('class', 'xAxis')
+	                .addAttribute('stroke', 'black')
+	                .addAttribute('fill', 'none')
+	                .toDomString();
+	        this.props.svg.appendChild(pathObj);
+
+
+
 				var yPath = pathG.move(this.props.OX, this.props.OY-level) + ' ' + pathG.lineTo(this.props.EX, this.props.EY-level);
 				pathObj = fnSvgElement.createNewElement('path')
 						.addAttribute('d', yPath)
@@ -518,7 +608,7 @@
 				var startX = this.props.SX = 0.05*width;
 				var startY = this.props.SY = 0.08*height;
 				this.props.OX = startX;
-				var oY = this.props.OY = height - 0.1*height;
+				var oY = this.props.OY = height - 0.02*height;
 				var endX = this.props.EX = width - startX;
 				this.props.EY = oY;
 				this.props.LOX = endX - startX;
@@ -590,11 +680,11 @@
 			'xCords': [],
 			'yCords': [],
 			'yCordsSorted': [],
-			'datumsPerScreen': 12,
+			'datumsPerScreen': 11,
 			'colours': {},
 			'barColours': '',
 			'yTickLabels': {},
-			'start': 36, // hardcoded draw area (48-datumsPerScreen)
+			'start': 42, // hardcoded draw area (48-datumsPerScreen)
 			'svgObj': 'undefined',
 			'axisType': 'generateSimpleAxis'
 		};
@@ -617,49 +707,69 @@
 				'axisType': 'generateSimpleAxis',
 				'aProps': {},
 				'prevPos': 0,
+				'presentPos': 0,
+				'grag' : false,
+				'veloc' : 0,
 				'start':0,
 				'end':0,
 				'length':0,
 				'groupBar':'undefined'
+
 			},
 			removeBars:function() {
 				var group = document.getElementsByClassName('bargroup')[0];
 			},
-			dragSvg : function(event) {
-				if(event.buttons!=0) {
-					var presentPos;
-					if ('ontouchstart' in window)
-						presentPos = event.touches[0].clientX; 
-					else
-						presentPos = event.screenX;
+			move:function() {
+				if(elBar.props.prevPos!=0) {
+					var diff = elBar.props.presentPos - elBar.props.prevPos;					
 
-					//console.log("PrevPos", this.props.prevPos, "presentPos", presentPos);
-					if(this.props.prevPos!=0) {
-
-						var diff = (presentPos-this.props.prevPos);
-						var thres = this.props.aProps.LOX/this.props.datumsPerScreen;
-						//console.log(thres);
-						if(diff<-thres && this.props.start+this.props.datumsPerScreen < this.props.length) {
-							this.props.start = this.props.start+1;
-							this.props.end = this.props.end+1;
-							this.props.svgObj.removeChild(this.props.groupBar);
-							this.generateBars(this.props.start+1,this.props.start+this.props.datumsPerScreen);
-							//console.log("GenBars(<-):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
-							this.props.prevPos = presentPos;
-						}
-						if(diff>thres && this.props.start > 0) {
-							this.props.start= this.props.start-1;
-							this.props.end = this.props.end-1;
-							this.props.svgObj.removeChild(this.props.groupBar);
-							this.generateBars(this.props.start+1,this.props.start+this.props.datumsPerScreen);
-							//console.log("GenBars(->):",barprops.start, "to", barprops.start+this.props.datumsPerScreen, "  diff:", diff);
-							this.props.prevPos = presentPos;
-						}
+					var thres = elBar.props.aProps.LOX/elBar.props.datumsPerScreen;
+					//console.log(thres);
+					if(diff<-12 && elBar.props.start+elBar.props.datumsPerScreen/2+1 < elBar.props.length) {
+						elBar.props.start = elBar.props.start+1;
+						elBar.props.end = elBar.props.end+1;
+						elBar.props.svgObj.removeChild(elBar.props.groupBar);
+						elBar.generateBars(elBar.props.start+1,elBar.props.start+elBar.props.datumsPerScreen);
+						elBar.props.prevPos = elBar.props.presentPos;
 					}
-					else
-						this.props.prevPos = presentPos;
-					barprops.start = this.props.start;
-					barprops.end = this.props.end;
+					if(diff>12 && elBar.props.start > -elBar.props.datumsPerScreen/2+1) {
+						elBar.props.start= elBar.props.start-1;
+						elBar.props.end = elBar.props.end-1;
+						elBar.props.svgObj.removeChild(this.props.groupBar);
+						elBar.generateBars(elBar.props.start+1,elBar.props.start+elBar.props.datumsPerScreen);
+						elBar.props.prevPos = elBar.props.presentPos;
+					}
+				}
+				else
+					elBar.props.prevPos = elBar.props.presentPos;
+				barprops.start = elBar.props.start;
+				barprops.end = elBar.props.end;
+			},
+			dragSvg : function(event) {
+				if(event) {
+					if(event.buttons!=0) {
+						if ('ontouchstart' in window)
+							elBar.props.presentPos = event.touches[0].clientX; 
+						else
+							elBar.props.presentPos = event.screenX;
+
+						elBar.props.veloc = elBar.props.presentPos-elBar.props.prevPos;
+
+						elBar.move();
+					}
+				}
+				else
+				{
+					//console.log("dragSvg timeout !!!");
+					//console.log(elBar.props.veloc);
+					
+					elBar.props.presentPos = elBar.props.prevPos + elBar.props.veloc;
+					elBar.props.veloc*=0.9;
+					elBar.move();
+
+					if(elBar.props.veloc > 12 || elBar.props.veloc < -12) {
+						setTimeout(elBar.dragSvg, 50/Math.pow(Math.abs(elBar.props.veloc),0.2));
+					}
 				}
 			},
 			mousedown : function(event) {
@@ -668,29 +778,17 @@
 					this.props.prevPos = event.touches[0].clientX;
 				else
 					this.props.prevPos = event.screenX;
-				return false;
-			},
-			ttShow : function(event) {
-				var t = event.target;
-				var td = document.getElementById("tdata");
-				td.textContent = t.firstChild.textContent;
-				t.style.fill = '#F2635F';
-				try {
-					if(this.props.prevBar != t) {
-						//this.props.prevBar.style.fill = 'steelblue';
-						this.props.prevBar.setAttribute("style", "fill:steelblue;");
-						//console.log('new style');
-					}
 
-				}
-				catch (e) {
-					//console.log("2!");
-				}
-				
-				this.props.prevBar = t;
-				// UBERACHTUNG!!!! суперкостыль
+				this.props.drag = true;
 				document.getElementById("bar").innerHTML = "";
 				chart.bar('bar', barprops);
+				return false;
+			},
+			mouseup : function(event) {
+				this.props.drag = false;
+				//console.log("dragSvg timeo");
+				setTimeout(this.dragSvg, 50);
+				return false;
 			},
 			generateBars : function(start,end) {
 				var LOX = this.props.aProps.LOX;
@@ -708,13 +806,10 @@
 
 				for(var i=start;i<=end;i++) {
 					var barHeight = ((parseFloat(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
+					if(barHeight == 0) barHeight = 2;
+					if(isNaN(barHeight)) barHeight = 0;
 					barPosition = oY-barHeight;
 					var bar = set.bar(x,barPosition,'b'+i,barWidth,barHeight,'chartBar');
-
-					if(bar.id == this.props.prevBar.id) {
-						bar.style.fill = '#F2635F';
-					}
-				
 
 					/*var titlet = fnSvgElement.createNewElement('text')
 											.addAttribute('id','tt'+i )
@@ -733,11 +828,21 @@
 					title.textContent = this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' Вт';
 					bar.appendChild(title);
 
+					// CAN BE OPTIMISED
+					if(i == parseInt((end+start)/2)) {
+						bar.style.opacity = 0.7;
+						bar.style.fill = '#F2635F';
+						var td = document.getElementById("tdata");
+						td.textContent = bar.firstChild.textContent;
+					}
+
 			 		//group.appendChild(titlet);
 
-					bar.addEventListener('mousedown', this.ttShow.bind(this));
+					bar.addEventListener('mousedown', this.mousedown.bind(this));
+					bar.addEventListener('mouseup', this.mouseup.bind(this));
 					if ('ontouchstart' in window) {
-						bar.addEventListener('touchstart', this.ttShow.bind(this));
+						bar.addEventListener('touchstart', this.mousedown.bind(this));
+						bar.addEventListener('touchend', this.mouseup.bind(this));
 					}
 					//"var tt = document.getElementById(\"tt"+i+"\"); tt.style.x = event.screenX; tt.style.y = event.screenY;tt.style.visibility='visible';"); // this.firstChild.style.visibility='visible'
 
@@ -753,6 +858,7 @@
 				svg.appendChild(group);
 			},
 			generate: function (id, properties) {
+
 				delete document.getElementById(id);
 				for (var i in properties) {
 					this.props[i] = properties[i];
@@ -776,9 +882,9 @@
 					var hours = d.getHours();
 					var minutes =  parseInt( ("0" + d.getMinutes()).substr(-2) );
 
-
-					xCords.push("с " + hours1 + ":" + (minutes1>0 ? minutes1 : "00") + " по " + hours + ":" + (minutes>0 ? minutes : "00"));
-					yCords.push(data[i]*2);
+					var date = data[i].ts;
+					xCords.push(date.substr(8, 2) + "/" + date.substr(5, 2) + "/" + date.substr(0, 4) + " " + date.substr(11, 5));
+					yCords.push(data[i].val*2);
 
 					
 				}
@@ -790,15 +896,18 @@
 				window['axis'][this.props.axisType](this.props.svgObj, xCords, this.props.yCordsSorted,[],0, this.props.height, this.props.width); 
 				document.getElementById(id).appendChild(this.props.svgObj);
 				this.props.aProps = axis.props;
+				//console.log(barprops.start);
 				this.generateBars(barprops.start+1, barprops.start+this.props.datumsPerScreen);
 				//this.props.start=barprops.start+1;
 				//console.log(barprops.start, "to", barprops.start+this.props.datumsPerScreen);
 				this.props.end=this.props.datumsPerScreen;
 				this.props.svgObj.addEventListener('mousemove',this.dragSvg.bind(this));
 				this.props.svgObj.addEventListener('mousedown',this.mousedown.bind(this));
+				this.props.svgObj.addEventListener('mouseup',this.mouseup.bind(this));
 				if ('ontouchstart' in window) {
 					this.props.svgObj.addEventListener('touchmove',this.dragSvg.bind(this));
 					this.props.svgObj.addEventListener('touchstart',this.mousedown.bind(this));
+					this.props.svgObj.addEventListener('touchend',this.mouseup.bind(this));
 				}
 			}
 		}; 
@@ -808,6 +917,7 @@
 		var error_counter = 0;
 		var req_counter = 999999;
 		var needBar = false;
+		var pieh;
 
 		String.prototype.format = function() {
 			var formatted = this;
@@ -817,24 +927,56 @@
 			return formatted;
 		};
 
-		function get_data(success, success1, error, timeout) {
+		function clearPD() {
+			document.getElementById("penvt").innerHTML  = "";
+			document.getElementById("penv1").innerHTML  = "";
+			document.getElementById("penv2").innerHTML  = "";
+			document.getElementById("penv3").innerHTML  = "";
+			document.getElementById("penv4").innerHTML  = "";
+			document.getElementById("pent").innerHTML  = "";
+			document.getElementById("pen1").innerHTML  = "";
+			document.getElementById("pen2").innerHTML  = "";
+			document.getElementById("pen3").innerHTML  = "";
+			document.getElementById("pen4").innerHTML  = "";
+			document.getElementById("ppie").innerHTML  = "";
+			document.getElementById("pieper").style.height = 0;
+		};
+
+		function get_data(success, success1, error, timeout, period) {
 			var rs = '/api/v1/';
 			if(!needBar) {
-				var xmlhttp = new XMLHttpRequest();
-				
-				switch(document.getElementById('interv').value)
-				{
-					case '1':
-						break;
-					case '2':
-						break;
-					case '3':
-						break;
-					case '4':
-						break;
-				}
+				var param = "";
+				var err = false;
 
-				xmlhttp.open('GET', rs+"get", true);
+				if(period) {
+					if(!document.getElementById('dfrom').value) {
+						document.getElementById('dfrom').style.border = "1px solid red";
+						clearPD();
+						err = true;
+					}
+					else document.getElementById('dfrom').style.border = "1px solid #00a5cd";
+					if(!document.getElementById('dto').value) {
+						document.getElementById('dto').style.border = "1px solid red";
+						clearPD();
+						err = true;
+					}
+					else document.getElementById('dto').style.border = "1px solid #00a5cd";
+					if(err) return;
+					if(document.getElementById('dto').value <= document.getElementById('dfrom').value) {
+						clearPD();
+						document.getElementById('dfrom').style.border = "1px solid red";
+						document.getElementById('dto').style.border = "1px solid red";
+						err = true;
+					}
+					if(err) return;
+					document.getElementById("pieper").style.height = pieh;
+
+
+					param = param + "?from=" + document.getElementById('dfrom').value + "&to=" + document.getElementById('dto').value;
+				}
+				var xmlhttp = new XMLHttpRequest();
+
+				xmlhttp.open('GET', rs+"get"+param, true);
 
 				xmlhttp.timeout = timeout || 2000;
 
@@ -843,7 +985,9 @@
 						if(xmlhttp.status == 200) {
 							try {
 								success(JSON.parse(xmlhttp.responseText));
-								/*success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));*/
+								/*if(period) success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":0.001, \"A2\":0.100, \"A3\":0.100, \"A4\":0.100}" ));
+								else success(JSON.parse( "{\"SN\":\"TEST0000\", \"T\":1508430088, \"A1\":4455.001, \"A2\":45455.100, \"A3\":155455.100, \"A4\":565461.100,\"P\":123.65, \"U\":220.14 }" ));*/
+								
 							}
 							catch (E) {
 								error("Fail to parse json get");
@@ -863,6 +1007,7 @@
 
 			
 			else {
+
 				var xmlhttp1 = new XMLHttpRequest();
 
 				xmlhttp1.open('GET', rs+"lp", true);
@@ -875,8 +1020,11 @@
 							try {
 								success1(JSON.parse(xmlhttp1.responseText));
 								needBar = false;
-								/*success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 5, 6, 2, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));
+								/*success1(JSON.parse( "{\"lp\":[5, 2, 34, 4, 33, 0.5, 5, 6, 2, 23, 0, 0, 0, 5, 6, 9, 9, 5, 1, 9, 10, 1, 1, 5, 1, 4, 5, 6, 2, 3, 5, 6, 2, 5, 6, 9, 9, 5, 1, 5, 8.451, 23.2, 3, 4, 35.1, 4, 5, 12]}" ));*/
+
+								/*success1(JSON.parse( "[{\"ts\":\"2016-02-28T00:00:00+00:00\",\"d\":3600,\"val\":4554},{\"ts\":\"2016-02-28T01:00:00+00:00\",\"d\":3600,\"val\":456},{\"ts\":\"2016-02-28T02:00:00+00:00\",\"d\":3600,\"val\":231},{\"ts\":\"2016-02-28T03:00:00+00:00\",\"d\":3600,\"val\":6745},{\"ts\":\"2016-02-28T04:00:00+00:00\",\"d\":3600,\"val\":7857},{\"ts\":\"2016-02-28T05:00:00+00:00\",\"d\":3600,\"val\":456},{\"ts\":\"2016-02-28T06:00:00+00:00\",\"d\":3600,\"val\":836},{\"ts\":\"2016-02-28T07:00:00+00:00\",\"d\":3600,\"val\":231},{\"ts\":\"2016-02-28T08:00:00+00:00\",\"d\":3600,\"val\":8788},{\"ts\":\"2016-02-28T09:00:00+00:00\",\"d\":3600,\"val\":798},{\"ts\":\"2016-02-28T10:00:00+00:00\",\"d\":3600,\"val\":5458},{\"ts\":\"2016-02-28T11:00:00+00:00\",\"d\":3600,\"val\":785},{\"ts\":\"2016-02-28T12:00:00+00:00\",\"d\":3600,\"val\":857},{\"ts\":\"2016-02-28T13:00:00+00:00\",\"d\":3600,\"val\":4564},{\"ts\":\"2016-02-28T14:00:00+00:00\",\"d\":3600,\"val\":2525},{\"ts\":\"2016-02-28T15:00:00+00:00\",\"d\":3600,\"val\":1232},{\"ts\":\"2016-02-28T16:00:00+00:00\",\"d\":3600,\"val\":8787},{\"ts\":\"2016-02-28T17:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T18:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T19:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T20:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T21:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T22:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-28T23:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T00:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T01:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T02:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T03:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T04:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T05:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T06:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T07:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T08:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T09:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T10:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T11:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T12:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T13:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T14:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T15:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T16:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T17:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T18:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T19:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T20:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T21:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T22:00:00+00:00\",\"d\":3600,\"val\":6666},{\"ts\":\"2016-02-29T23:00:00+00:00\",\"d\":3600,\"val\":6666}]" ));
 								needBar = false;*/
+								
 							}
 							catch (E) {
 								error("Fail to parse json lp");
@@ -891,14 +1039,19 @@
 					}
 				};
 
-				xmlhttp1.send(null);		
+				xmlhttp1.send(null);	
 			}
 		}
 
-		function refreshData()
+		function refreshData(period)
 		{
 			get_data(
 				function(data) {
+					//console.log("Refresh PIE");
+					//console.log(document.getElementById('interv').value);
+					var p = "";
+					if(period) p = p + "p";
+
 					error_counter = 0;
 					req_counter++;
 					if(req_counter > 29) {
@@ -924,45 +1077,49 @@
 					if(!isNaN(T3)) pp.data.push(T3);
 					if(!isNaN(T4)) pp.data.push(T4);
 					
-					barprops.time = parseInt(data.T);
+					//barprops.time = parseInt(data.T);
 
 					if(pp.data.length > 1)
 					{
 						var sum = 0;
 						for (var i = 0; i < pp.data.length; i++) {
 							sum += pp.data[i];
-							document.getElementById("en" + (i+1).toString()).innerHTML  = "<span style='color:"+pp.colours[i]+"'>■</span> Тариф "+(i+1).toString()+":";
-							document.getElementById("env" + (i+1).toString()).innerHTML  = "{0}".format(pp.data[i].toFixed(1).toString());
+							document.getElementById( p+"en"+(i+1).toString() ).innerHTML  = "<span style='color:"+pp.colours[i]+"'>■</span> Тариф "+(i+1).toString();
+							document.getElementById( p+"env"+(i+1).toString() ).innerHTML  = "{0}".format( pp.data[i].toFixed(1).toString() );
 						}
-
-						document.getElementById("pie").innerHTML = "";
+						
+						document.getElementById(p +"pie").innerHTML = "";
 						if(sum != 0)
 						{
-							chart.pie('pie', pp);
+							chart.pie(p +'pie', pp);
 						}
-						document.getElementById("et").innerHTML  = "Сумма:";
-						document.getElementById("envt").innerHTML  = "{0}".format(sum.toFixed(1).toString());
+						document.getElementById(p +"ent").innerHTML  = "○ Сумма";
+						document.getElementById(p +"envt").innerHTML  = "{0}".format(sum.toFixed(1).toString());
 
 					}
 					else
 					{	try {
-							el = document.getElementById("pies");
+							el = document.getElementById(p +"pies");
 							el.parentNode.removeChild(el);
 						} catch (e) {
 							//console.log("1!");
 						}
-						document.getElementById("envt").innerHTML = T1.toString();
+						document.getElementById(p +"envt").innerHTML = T1.toString();
 					}
 					
-					document.getElementById("power").innerHTML	= data.P.toFixed(1).toString();
-					document.getElementById("voltage").innerHTML  = data.U.toFixed(1).toString();
+					if(!period) {
+						document.getElementById("power").innerHTML	= data.P.toFixed(1).toString();
+						document.getElementById("voltage").innerHTML  = data.U.toFixed(1).toString();
 
-					setTimeout(refreshData, 2000);
+						setTimeout(refreshData, 2000);
+					}
 					
 				},
 				function(data) {
 					error_counter = 0;
-					barprops.data = data.lp;
+					for (var i in data) {
+						barprops.data[i] = data[i];
+					}
 					document.getElementById("bar").innerHTML = "";
 					chart.bar('bar', barprops);
 
@@ -983,6 +1140,7 @@
 						document.getElementById("en3").innerHTML  = "";
 						document.getElementById("en4").innerHTML  = "";
 						document.getElementById("pie").innerHTML  = "";
+						clearPD();
 						document.getElementById("tdata").innerHTML  = "";
 						document.getElementById("bar").innerHTML  = "";
 						document.getElementById("power").innerHTML	= "";
@@ -995,7 +1153,8 @@
 					
 					setTimeout(refreshData, 3000);
 				},
-				2000
+				2000,
+				period
 			);
 			//elBar.mouseup();
 		}
@@ -1004,7 +1163,9 @@
 
 		window.onload = function()
 		{
-			setTimeout(refreshData, 2000);
+			pieh = document.getElementById("pieper").style.height;
+			clearPD();
+			refreshData();
 		};
 
 		window.onresize = function()
@@ -1033,75 +1194,155 @@
 			</div>
 		</div>
 		<div class="content-body">
+
 			<div class="section-row">
 				<div class="section">
 					<h2>Потребление (кВт•ч)</h2>
-					<div class="section-body">
+					
 
-						<div id="pies" class="ss">
-							<div id="pie" class="sss"></div>
+
+
+					<div class="tabs">
+					    <input type="radio" name="inset" value="" id="tab_1" checked>
+					    <label for="tab_1">Общее</label>
+
+
+					    <input type="radio" name="inset" value="" id="tab_2">
+					    <label for="tab_2">Период</label>
+
+						<div id="txt_1" class="tabsect">
+							<div class="section-body">
+								<div id="pies" class="ss">
+									<div id="pie" class="sss"></div>
+								</div>
+
+								<div class="ss">
+									<table class="sss">
+										<tr>
+											<td class="ssss">
+												<element id="en1"></element>
+											</td>
+											<td>
+												<element id="env1"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="en2"></element>
+											</td>
+											<td>
+												<element id="env2"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="en3"></element>
+											</td>
+											<td>
+												<element id="env3"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="en4"></element>
+											</td>
+											<td>
+												<element id="env4"></element>
+											</td>
+										</tr>
+										<tr style='height:50px'>
+											<td>
+												<element id="ent"></element>
+											</td>
+											<td>
+												<element id="envt"></element>
+											</td>
+										</tr>  
+									</table>
+								</div>
+							</div>
 						</div>
 
-						<div class="ss">
-							<table class="sss">
-								<tr>
-									<td class="ssss">
-										<element id="en1"></element>
-									</td>
-									<td>
-										<element id="env1"></element>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<element id="en2"></element>
-									</td>
-									<td>
-										<element id="env2"></element>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<element id="en3"></element>
-									</td>
-									<td>
-										<element id="env3"></element>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<element id="en4"></element>
-									</td>
-									<td>
-										<element id="env4"></element>
-									</td>
-								</tr>
-								<tr style='height:50px'>
-									<td>
-										<element id="et"></element>
-									</td>
-									<td>
-										<element id="envt"></element>
-									</td>
-								</tr>  
-							</table>
-						</div>
 
-					</div>
-					<div class="ss">
-					<div class="s">
-						<div class="styled-select blue semi-square">
-							<select id="interv" onchange="refreshData()"> <!-- onchange or other?? -->
-								<option value="1">За всё время</option>
-								<option value="2">За 30 дней</option>
-								<option value="3">За 7 дней</option>
-								<option value="4">За 24 часа</option>
-							</select>
+
+						<div id="txt_2" class="tabsect">
+							<div class="section-body" id="pieper">
+								<div id="ppies" class="ss">
+									<div id="ppie" class="sss"></div>
+								</div>
+
+								<div class="ss">
+									<table class="sss">
+										<tr>
+											<td class="ssss">
+												<element id="pen1"></element>
+											</td>
+											<td>
+												<element id="penv1"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="pen2"></element>
+											</td>
+											<td>
+												<element id="penv2"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="pen3"></element>
+											</td>
+											<td>
+												<element id="penv3"></element>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<element id="pen4"></element>
+											</td>
+											<td>
+												<element id="penv4"></element>
+											</td>
+										</tr>
+										<tr style='height:50px'>
+											<td>
+												<element id="pent"></element>
+											</td>
+											<td>
+												<element id="penvt"></element>
+											</td>
+										</tr>  
+									</table>
+								</div>
+							</div>
+
+							<div class="ss direc">
+								<div class="ss">
+									<div class="dates">
+										<input type="date" id="dfrom">
+									</div>
+								</div>
+								<div class="ss">
+									<div class="dates">
+										<input type="date" id="dto">
+									</div>
+								</div>
+							</div>
+							<div class="ss">
+								<div class="dates">
+									<button type="submit" onclick = "refreshData(true);">Показать</button>
+								</div>
+							</div>
+						
 						</div>
-					</div>
-					</div>
+					</div> <!-- #content-region -->
+
+
+
 				</div>
 			</div>
+
 			<div class="section-row">
 
 				<div class="section">
@@ -1123,10 +1364,23 @@
 			<div class="section-row">
 				<div class="section">
 					<h2>График средней мощности</h2>
-					<div class="barcht">
-						<strong id="tdata"></strong>
+					<div id="tdata" class="barcht"></div>
+					<div id="bar" class="barch"></div>
+					<div class="ss">
+						<table class="sss" style="display:flex; flex-direction:row; justify-content:center;font-size: 1.4rem; margin-top: -5px; margin-bottom: 10px">
+										<tr class="barcht">
+											<td>
+												<element id="en1">20/11 09:00</element>
+											</td>
+											<td style="width: 100%;">
+												
+											</td>
+											<td>
+												<element id="env1">20/11 22:00</element>
+											</td>
+										</tr>
+						</table>	
 					</div>
-						<div id="bar" class="barch"></div>
 				</div>
 			</div>
 
