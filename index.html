@@ -621,9 +621,9 @@
 					this.props.aDiff = 0;
 					return;
 				}
-				var max = Math.ceil(ycords[length - 1]);
+				var max = Math.ceil(ycords[length - 1] / 4) * 4;
 				this.props.yAxPos = max;
-				//console.log(max, range);
+				console.log(ycords[length - 1], range);
 				var a_diff = (oY - startY) / (max / range);
 				//console.log("a_diff",a_diff);
 				this.props.aDiff = a_diff/range;
@@ -808,35 +808,36 @@
 					var barHeight = ((parseFloat(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
 					if(barHeight == 0) barHeight = 2;
 					if(isNaN(barHeight)) barHeight = 0;
+
 					barPosition = oY-barHeight;
 					var bar = set.bar(x,barPosition,'b'+i,barWidth,barHeight,'chartBar');
-
-					/*var titlet = fnSvgElement.createNewElement('text')
-											.addAttribute('id','tt'+i )
-											.addAttribute('x', x)
-											.addAttribute('y', barPosition)
-											.addAttribute('position', 'relative')
-											.addText(this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' Вт')
-											.addAttribute('class','tooltip')
-											.addAttribute('font-family','Arial')
-											.addAttribute('font-size',20)
-											.addAttribute('visibility','hidden')
-											.toDomString();*/
-
 					
 					var title = fnSvgElement.createNewElement('title').toDomString();
 					title.textContent = this.props.xCords[i-1] + ' - ' + this.props.yCords[i-1] + ' Вт';
 					bar.appendChild(title);
 
 					// CAN BE OPTIMISED
+					var td;
 					if(i == parseInt((end+start)/2)) {
 						bar.style.opacity = 0.7;
 						bar.style.fill = '#F2635F';
-						var td = document.getElementById("tdata");
+						td = document.getElementById("tdata");
 						td.textContent = bar.firstChild.textContent;
 					}
-
-			 		//group.appendChild(titlet);
+					if(i == start) {
+						td = document.getElementById("tstart");
+						if(barHeight)
+							td.textContent = bar.firstChild.textContent.substr(0,5) + bar.firstChild.textContent.substr(10,6);
+						else
+							td.textContent = this.props.xCords[0].substr(0,5)  + this.props.xCords[0].substr(10,6);
+					}
+					if(i == end) {
+						td = document.getElementById("tend");
+						if(barHeight)
+							td.textContent = bar.firstChild.textContent.substr(0,5) + bar.firstChild.textContent.substr(10,6);
+						else
+							td.textContent = this.props.xCords[this.props.xCords.length - 1].substr(0,5)  + this.props.xCords[this.props.xCords.length - 1].substr(10,6);
+					}
 
 					bar.addEventListener('mousedown', this.mousedown.bind(this));
 					bar.addEventListener('mouseup', this.mouseup.bind(this));
@@ -844,11 +845,8 @@
 						bar.addEventListener('touchstart', this.mousedown.bind(this));
 						bar.addEventListener('touchend', this.mouseup.bind(this));
 					}
-					//"var tt = document.getElementById(\"tt"+i+"\"); tt.style.x = event.screenX; tt.style.y = event.screenY;tt.style.visibility='visible';"); // this.firstChild.style.visibility='visible'
-
 
 			 		group.appendChild(bar);
-
 			 		x=x+barWidth+distBtwBar;
 				}
 
@@ -884,7 +882,7 @@
 
 					var date = data[i].ts;
 					xCords.push(date.substr(8, 2) + "/" + date.substr(5, 2) + "/" + date.substr(0, 4) + " " + date.substr(11, 5));
-					yCords.push(data[i].val*2);
+					yCords.push((data[i].val*3.6/data[i].d).toFixed(1));
 
 					
 				}
@@ -991,12 +989,12 @@
 							}
 							catch (E) {
 								error("Fail to parse json get");
-								console.log("Fail to parse json get");
+								//console.log("Fail to parse json get");
 							}
 						}
 						else {
 							error(xmlhttp.responseText);
-							console.log("xmlhttp", xmlhttp.responseText);
+							//console.log("xmlhttp", xmlhttp.responseText);
 						}
 
 					}
@@ -1028,12 +1026,12 @@
 							}
 							catch (E) {
 								error("Fail to parse json lp");
-								console.log("Fail to parse json lp");
+								//console.log("Fail to parse json lp");
 							}
 						}
 						else {
 							error(xmlhttp1.responseText);
-							console.log("xmlhttp1", xmlhttp1.responseText);
+							//console.log("xmlhttp1", xmlhttp1.responseText);
 						}
 
 					}
@@ -1142,6 +1140,8 @@
 						document.getElementById("pie").innerHTML  = "";
 						clearPD();
 						document.getElementById("tdata").innerHTML  = "";
+						document.getElementById("tstart").innerHTML  = "";
+						document.getElementById("tend").innerHTML  = "";
 						document.getElementById("bar").innerHTML  = "";
 						document.getElementById("power").innerHTML	= "";
 						document.getElementById("voltage").innerHTML  = "";
@@ -1368,17 +1368,15 @@
 					<div id="bar" class="barch"></div>
 					<div class="ss">
 						<table class="sss" style="display:flex; flex-direction:row; justify-content:center;font-size: 1.4rem; margin-top: -5px; margin-bottom: 10px">
-										<tr class="barcht">
-											<td>
-												<element id="en1">20/11 09:00</element>
-											</td>
-											<td style="width: 100%;">
-												
-											</td>
-											<td>
-												<element id="env1">20/11 22:00</element>
-											</td>
-										</tr>
+							<tr class="barcht">
+								<td>
+									<div id="tstart"></div>
+								</td>
+								<td style="width: 100%;"></td>
+								<td>
+									<div id="tend"></div>
+								</td>
+							</tr>
 						</table>	
 					</div>
 				</div>
