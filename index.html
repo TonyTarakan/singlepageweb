@@ -8,14 +8,14 @@
 	<style>
 	html
 	{
-		color:rgba(0,0,0,0.7);
+		color:rgba(200,200,200,0.7);
 		font-family:Arial,Helvetica,Sans-Serif;
 	}
 	body
 	{
 		margin:0;
 		padding:0;
-		background-color:#f5f5f5
+		background-color:#404040
 	}	
 	h1,h2
 	{
@@ -73,7 +73,7 @@
 		vertical-align:middle;
 		display:table-cell;
 		font-size:2rem;
-		color:#003;
+		color:#A0A0A0;
 		padding-top:10px
 	}
 	.content-body
@@ -95,7 +95,7 @@
 		margin-left:1rem;
 		margin-right:1rem;
 		flex:1;
-		background-color:#fff;
+		background-color:#393939;
 		-webkit-transition:box-shadow .3s ease-in-out 0;
 		-moz-transition:box-shadow .3s ease-in-out 0;
 		-o-transition:box-shadow .3s ease-in-out 0;
@@ -114,7 +114,7 @@
 		margin-bottom:1rem;
 		font-size:1.4rem;
 		flex:1;
-		background-color:#fff;
+		background-color:transparent;
 		display:flex;
 		flex-direction:row;
 		flex-wrap:nowrap;
@@ -141,7 +141,7 @@
 	{
 		padding-top:.5rem;
 		padding-bottom:.5rem;
-		color:#00a5cd;
+		color:#80A090;
 		font-weight:400;
 		border-bottom:1px solid #f5f5f5
 	}
@@ -151,7 +151,7 @@
 	}
 	.chartBar
 	{
-		fill:steelblue;
+		fill:#808080;
 		stroke:black;
 		stroke-width:0.1;
 		stroke-opacity:0.1;
@@ -171,7 +171,7 @@
 		width:100%;
 		height:400px;
 		font-size:1.4rem;
-		fill:#00a5cd
+		fill:#709090
 	}
 	.barcht
 	{
@@ -853,7 +853,7 @@
 						'width': 260,
 						'height': 260,
 						'data': [],
-						'colours': ['#ff8678', '#ffbf00', '#4ec7ff', '#6ee7ff']
+						'colours': ['#CC7668', '#CCAf00', '#3eB7CC', '#5eC7CC']
 					};
 
 					if(!isNaN(T1)) pp.data.push(T1);
@@ -951,7 +951,7 @@
 		<div class="header">
 			<div class="header-body">
 				<div class="title-logo">
-					<img class="figure" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3Ny41OSAxNC42NSI+PGcgZmlsbD0iI2IwMTg0MiI+PHBhdGggZD0iTTM5LjYzIDcuMjNjMC0yLjUtMS44OC00LjUyLTQuNDgtNC41M2gtLjAyYy0yLjYgMC00LjQ2IDIuMTUtNC40NiA0LjY2IDAgMi41IDEuODQgNC40OCA0LjQ2IDQuNDggMiAwIDQuMTctLjkgNC40NS0yLjc0aC0xLjU1Yy0uMzIgMi4xLTQuMDIgMi4wNy00LjE1LjA1LS4wMi0uMzQtLjAyLTEuMjctLjAyLTEuMjdoNS44Yy4wMi0uMTctLjAzLS40Ni0uMDMtLjY1em0tNS43NC0uNVY1LjJzMC0xLjQgMS4yLTEuNGMxIDAgMS4xIDEuNDcgMS4xIDEuNDd2MS41aC0yLjN6TTY5LjkgMGgzLjIzdjExLjQzSDcwem00LjM4IDBoMy4yNHYxMS40M0g3NC4zek0xNS40IDIuN2MtMS42NCAwLTQuNyAxLjE2LTQuNyA0LjYuMDIgMy44IDMuMDYgNC41NCA0LjcgNC41NCAxLjY0IDAgNC43LS45NiA0LjctNC41NS0uMDItMy42LTMuMDYtNC42LTQuNy00LjZ6bTAgOC4wM2MtLjkgMC0xLjIyLTEuMzYtMS4yMi0zLjQzIDAtMi4wOC4xOC0zLjQ3IDEuMjItMy40Ny45OCAwIDEuMTggMS40IDEuMTggMy40NyAwIDIuMDctLjIgMy40My0xLjE4IDMuNDN6TTAgMGgzLjV2NC43aDIuNzJWMGgzLjd2MTEuNDNINi4yVjYuNEgzLjV2NS4wNUgwVjBtMjEuMDggMTEuNDN2LTguNGgzLjJ2LjhzMS4xNS0uOTYgMi41NC0uOTZjMS4zIDAgMi41LjkgMi43NiAxLjkyLjA4LjMuMDYuNi4wNi42djZIMjYuNVY1LjlzLjEyLTEuMjUtLjg0LTEuMmMtLjc2LjA0LTEuMjYuNDQtMS40Ljd2Ni4wNUgyMS4xIi8+PHBhdGggZD0iTTM4Ljg0IDEyLjhjMCAuNzUuNDQgMS44NSAxLjg1IDEuODUgMS4xIDAgMi4yLS42NiAyLjYtMS41N2w0LTEwLjA0IDIuNCA4LjRoMi42M0w1My43IDYuNGwxLjYgNS4xaDIuNUw2MCAzLjFoLTEuNGwtMS4xNiA0LjQtMS41LTQuNGgtMi42bC0xLjMgNC41LTEuMzMtNC41M2gtNC42TDQ0LjUgNy4xbC0xLjU0LTQuMDVoLTMuN3MzLjQyIDcuOCAzLjQgOC40Yy0uMDQgMS4zOC0xLjEgMi0xLjI0IDIuMDVoLjAyYy4xMi0uMTcuMjMtLjUuMjMtLjc4IDAtLjc3LS42Mi0xLjQtMS40LTEuNC0uNzcgMC0xLjQuNjQtMS40IDEuNDhNNjkuMiA3LjIzYzAtMi41LTEuOS00LjUyLTQuNS00LjUzLTIuNiAwLTQuNDYgMi4xNS00LjQ2IDQuNjYgMCAyLjUgMS44NCA0LjQ4IDQuNDYgNC40OCAxLjk4IDAgNC4xNi0uOSA0LjQ0LTIuNzRINjcuNmMtLjMzIDIuMS00LjAzIDIuMDctNC4xNi4wNS0uMDItLjM0LS4wMi0xLjI3LS4wMi0xLjI3aDUuOGMuMDItLjE3LS4wMy0uNDYtLjAzLS42NXptLTUuNzQtLjVsLjA2LTEuNTJzMC0xLjQgMS4yLTEuNGMxLjA0IDAgMS4wNyAxLjUgMS4wNyAxLjV2MS41aC0yLjR6Ii8+PC9nPjwvc3ZnPg=="></img>
+					<svg class="title-logo" viewBox="0 0 77.59 14.65"><g fill="#FFC0C0"><path d="M39.63 7.23c0-2.5-1.88-4.52-4.48-4.53h-.02c-2.6 0-4.46 2.15-4.46 4.66 0 2.5 1.84 4.48 4.46 4.48 2 0 4.17-.9 4.45-2.74h-1.55c-.32 2.1-4.02 2.07-4.15.05-.02-.34-.02-1.27-.02-1.27h5.8c.02-.17-.03-.46-.03-.65zm-5.74-.5V5.2s0-1.4 1.2-1.4c1 0 1.1 1.47 1.1 1.47v1.5h-2.3zM69.9 0h3.23v11.43H70zm4.38 0h3.24v11.43H74.3zM15.4 2.7c-1.64 0-4.7 1.16-4.7 4.6.02 3.8 3.06 4.54 4.7 4.54 1.64 0 4.7-.96 4.7-4.55-.02-3.6-3.06-4.6-4.7-4.6zm0 8.03c-.9 0-1.22-1.36-1.22-3.43 0-2.08.18-3.47 1.22-3.47.98 0 1.18 1.4 1.18 3.47 0 2.07-.2 3.43-1.18 3.43zM0 0h3.5v4.7h2.72V0h3.7v11.43H6.2V6.4H3.5v5.05H0V0m21.08 11.43v-8.4h3.2v.8s1.15-.96 2.54-.96c1.3 0 2.5.9 2.76 1.92.08.3.06.6.06.6v6H26.5V5.9s.12-1.25-.84-1.2c-.76.04-1.26.44-1.4.7v6.05H21.1"/><path d="M38.84 12.8c0 .75.44 1.85 1.85 1.85 1.1 0 2.2-.66 2.6-1.57l4-10.04 2.4 8.4h2.63L53.7 6.4l1.6 5.1h2.5L60 3.1h-1.4l-1.16 4.4-1.5-4.4h-2.6l-1.3 4.5-1.33-4.53h-4.6L44.5 7.1l-1.54-4.05h-3.7s3.42 7.8 3.4 8.4c-.04 1.38-1.1 2-1.24 2.05h.02c.12-.17.23-.5.23-.78 0-.77-.62-1.4-1.4-1.4-.77 0-1.4.64-1.4 1.48M69.2 7.23c0-2.5-1.9-4.52-4.5-4.53-2.6 0-4.46 2.15-4.46 4.66 0 2.5 1.84 4.48 4.46 4.48 1.98 0 4.16-.9 4.44-2.74H67.6c-.33 2.1-4.03 2.07-4.16.05-.02-.34-.02-1.27-.02-1.27h5.8c.02-.17-.03-.46-.03-.65zm-5.74-.5l.06-1.52s0-1.4 1.2-1.4c1.04 0 1.07 1.5 1.07 1.5v1.5h-2.4z"/></g></svg>
 				</div>
 				<div class="title">
 					<div class="title-wrapper">
